@@ -14,11 +14,9 @@ mysql -u sirs -p
 CREATE DATABASE thecork;
 
 
-
-#other important commands
-
--Delete a Database
-DROP DATABASE dbname;
-
--Delete a User
-DROP USER 'thecork'@'localhost';
+# other important commands
+#  -Delete a Database
+#  DROP DATABASE dbname;
+#
+#  -Delete a User
+#  DROP USER 'thecork'@'localhost';
