@@ -2,6 +2,9 @@
 ## Infrastructure
 ... notes regarding infrastructure ...
 
+## How to start service
+After setting everything up, run `mvn spring-boot:run` in directory `thecork-api/`
+
 ## Project strucutre
 Organization of project folders:
 
