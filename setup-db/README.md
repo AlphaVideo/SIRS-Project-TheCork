@@ -22,5 +22,5 @@ sudo ufw allow from 10.0.0.2 to any port 3306
 sudo ufw reload 
 ```
 
-Uncomplicated Firewall is persistant, and will keep changes through reboot.
+Uncomplicated Firewall is persistent, and will keep changes through reboot.
 To deactive run `sudo ufw disable`.
