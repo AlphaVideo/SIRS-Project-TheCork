@@ -5,7 +5,7 @@
 `enp0s8`: Internal Network connected to ```sw-wan``` \
 `enp0s9`: NAT
 
-(don't forget to generate new MAC addreses!)
+(don't forget to generate new MAC addresses!)
 <hr/>
 
 Instructions:
