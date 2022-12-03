@@ -1,0 +1,19 @@
+# Let NetworkManager manage all devices on this system
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+      enp0s3:
+          addresses:
+              - 10.0.0.2/24
+          nameservers:
+              addresses: [8.8.8.8, 8.8.4.4]
+      enp0s8:
+          addresses:
+              - 192.168.1.2/24
+          nameservers:
+              addresses: [8.8.8.8, 8.8.4.4]
+      enp0s9: #useful for having internet in the VMs...
+          dhcp4: yes
+          nameservers:
+            addresses: [8.8.8.8, 8.8.4.4]
