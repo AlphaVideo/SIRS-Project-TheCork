@@ -4,7 +4,7 @@
 
 `enp0s3`: Internal Network connected to ```sw-lan```
 
-(don't forget to generate new MAC addreses!)
+(don't forget to generate new MAC addresses!)
 <hr/>
 
 Instructions:
