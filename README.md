@@ -8,6 +8,7 @@ After setting everything up, run `mvn spring-boot:run` in directory `thecork-api
 ## Project strucutre
 Organization of project folders:
 
+- `setup-client/`: scripts to be run inside VM3 to setup before starting service
 - `setup-api/`: scripts to be run inside VM2 to setup before starting service
 - `setup-db/`: scripts to be run inside VM1 to setup before starting service
 - `thecork-api/`: code regarding REST API for VM2
