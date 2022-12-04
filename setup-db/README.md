@@ -24,3 +24,10 @@ sudo ufw reload
 
 Uncomplicated Firewall is persistent, and will keep changes through reboot.
 To deactive run `sudo ufw disable`.
+
+3) Use your preferred text editor to open the mysqld.cnf file. (/etc/mysql/mysql.conf.d/mysqld.cnf)
+   Scroll down to the *bind-address* line and change the IP address to 0.0.0.0 .
+   Apply the changes made to the MySQL config file by restarting the MySQL service:
+   ```
+   sudo systemctl restart mysql
+   ```
