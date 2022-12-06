@@ -9,5 +9,4 @@ public class TheCorkApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TheCorkApplication.class, args);
 	}
-
 }
