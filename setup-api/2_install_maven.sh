@@ -2,6 +2,9 @@
 
 TMP_MAVEN_VERSION=${1:-"3.8.6"}
 
+# Install Java 17
+sudo apt install openjdk-17-jdk
+
 # Download Maven
 wget --no-check-certificate https://dlcdn.apache.org/maven/maven-3/3.8.6/binaries/apache-maven-3.8.6-bin.tar.gz -P /tmp
 
@@ -18,3 +21,6 @@ sudo chmod +x /etc/profile.d/maven.sh
 >> /etc/profile.d/maven.sh echo "export M2_HOME=/opt/maven"
 >> /etc/profile.d/maven.sh echo "export MAVEN_HOME=/opt/maven"
 >> /etc/profile.d/maven.sh echo "export PATH=\$M2_HOME/bin:\$PATH"
+
+
+echo "Run: 'source /etc/profile.d/maven.sh'"
