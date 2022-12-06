@@ -1,5 +1,3 @@
-echo "VM-API" | sudo tee /etc/hostname
-
 sudo cp ./01-network-manager-all.yaml /etc/netplan/
 sudo cp ./sysctl.conf /etc/
 sudo cp ./before.rules /etc/ufw/
