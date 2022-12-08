@@ -44,7 +44,7 @@ public class DebugCommander {
 		int count;
 		
 		try {
-			stmt = _connection.prepareStatement("INSERT INTO restaurant VALUES ('?');");
+			stmt = _connection.prepareStatement("INSERT INTO restaurant VALUES (?);");
 			stmt.setString(1,  name);
 			count = stmt.executeUpdate();
 		} catch (SQLException e) {
@@ -60,7 +60,7 @@ public class DebugCommander {
 		int count;
 		
 		try {
-			stmt = _connection.prepareStatement("DELETE FROM restaurant WHERE name = '?';");
+			stmt = _connection.prepareStatement("DELETE FROM restaurant WHERE name = ?;");
 			stmt.setString(1,  name);
 			count = stmt.executeUpdate();
 		} catch (SQLException e) {
@@ -72,33 +72,49 @@ public class DebugCommander {
 	}
 	
 	private JSONArray processResult(ResultSet res) throws SQLException {
+//		JSONArray json = new JSONArray();
+//		ResultSetMetaData md = res.getMetaData();
+//		int numCols = md.getColumnCount();
+//
+//		List<String> colNames = IntStream.range(0, numCols)
+//		  .mapToObj(i -> {
+//		      try {
+//		          return md.getColumnName(i + 1);
+//		      } catch (SQLException e) {
+//		          e.printStackTrace();
+//		          return "?";
+//		      }
+//		  })
+//		  .collect(Collectors.toList());
+//
+//
+//		while (res.next()) {
+//		    JSONObject row = new JSONObject();
+//		    colNames.forEach(cn -> {
+//		            try {
+//						row.put(cn, res.getObject(cn));
+//					} catch (JSONException | SQLException e) {
+//						e.printStackTrace();
+//					}
+//		    });
+//		    json.put(row);
+//		}		
+//		return json;
+		
+
 		JSONArray json = new JSONArray();
-		ResultSetMetaData md = res.getMetaData();
-		int numCols = md.getColumnCount();
+		ResultSetMetaData rsmd = res.getMetaData();
+		int numColumns = rsmd.getColumnCount();
 
-		List<String> colNames = IntStream.range(0, numCols)
-		  .mapToObj(i -> {
-		      try {
-		          return md.getColumnName(i + 1);
-		      } catch (SQLException e) {
-		          e.printStackTrace();
-		          return "?";
-		      }
-		  })
-		  .collect(Collectors.toList());
+		while(res.next()) {
+		  JSONObject obj = new JSONObject();
 
-
-		while (res.next()) {
-		    JSONObject row = new JSONObject();
-		    colNames.forEach(cn -> {
-		            try {
-						row.put(cn, res.getObject(cn));
-					} catch (JSONException | SQLException e) {
-						e.printStackTrace();
-					}
-		    });
-		    json.put(row);
-		}		
+		  for (int i=1; i<=numColumns; i++) {
+		    String columnName = rsmd.getColumnName(i);
+		    obj.put(columnName, res.getObject(columnName));
+		  }
+		  json.put(obj);
+		}
 		return json;
 	}
 }
