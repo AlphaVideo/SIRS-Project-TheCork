@@ -29,16 +29,9 @@ public class DebugCommander {
 		try {
 			stmt = _connection.prepareStatement("SELECT * FROM restaurant;");
 			res = stmt.executeQuery();		
+			json = processResult(res);
 
 		} catch (SQLException e) {
-			// add info to logger
-			e.printStackTrace();
-		}
-		
-		try {
-			json = processResult(res);
-		}
-		catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
 		}
@@ -46,52 +39,28 @@ public class DebugCommander {
 		return json;
 	}
 	
-	public JSONArray addRestaurant(String name) {
+	public void addRestaurant(String name) {
 		PreparedStatement stmt;
-		ResultSet res = null;
-		JSONArray json = null;
 		
 		try {
 			stmt = _connection.prepareStatement("INSERT INTO restaurant VALUES ?;");
-			res = stmt.executeQuery();
+			stmt.executeQuery();
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
 		}
-
-		try {
-			json = processResult(res);
-		}
-		catch (SQLException e) {
-			// add info to logger
-			e.printStackTrace();
-		}
-		
-		return json;
 	}
 
-	public JSONArray removeRestaurant(String name) {
+	public void removeRestaurant(String name) {
 		PreparedStatement stmt;
-		ResultSet res = null;
-		JSONArray json = null;
 		
 		try {
 			stmt = _connection.prepareStatement("DELETE FROM restaurant WHERE name = ?;");
-			res = stmt.executeQuery();
+			stmt.executeQuery();
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
 		}
-
-		try {
-			json = processResult(res);
-		}
-		catch (SQLException e) {
-			// add info to logger
-			e.printStackTrace();
-		}
-		
-		return json;
 	}
 	
 	private JSONArray processResult(ResultSet res) throws SQLException {

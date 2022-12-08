@@ -35,12 +35,14 @@ public class DebugController {
 	}
 
 	@GetMapping("/debug/restaurant/add/{name}")
-	public JSONArray addRestaurant(@PathVariable String name) {
-		return _commander.addRestaurant(name);
+	public String addRestaurant(@PathVariable String name) {
+		_commander.addRestaurant(name);
+		return "OK";
 	}
 
 	@GetMapping("/debug/restaurant/remove/{name}")
-	public JSONArray removeRestaurant(@PathVariable String name) {
-		return _commander.removeRestaurant(name);
+	public String removeRestaurant(@PathVariable String name) {
+		_commander.removeRestaurant(name);
+		return "OK";
 	}
 }
