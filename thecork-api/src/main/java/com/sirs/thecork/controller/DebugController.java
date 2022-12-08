@@ -1,8 +1,8 @@
 package com.sirs.thecork.controller;
 
-import java.sql.ResultSet;
+import java.util.List;
 
-import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,7 +30,7 @@ public class DebugController {
 	}
 
 	@GetMapping("/debug/restaurant/list")
-	public JSONArray listRestaurant() {
+	public List<JSONObject> listRestaurant() {
 		return _commander.listRestaurant();
 	}
 
