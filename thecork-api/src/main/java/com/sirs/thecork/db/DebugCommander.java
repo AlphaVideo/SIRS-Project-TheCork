@@ -5,12 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 public class DebugCommander {
@@ -21,10 +17,10 @@ public class DebugCommander {
 		_connection = DatabaseConnection.getConnection();
 	}
 	
-	public JSONArray listRestaurant() {
+	public List<JSONObject> listRestaurant() {
 		PreparedStatement stmt;
 		ResultSet res = null;
-		JSONArray json = null;
+		List<JSONObject> json;
 		
 		try {
 			stmt = _connection.prepareStatement("SELECT * FROM restaurant;");
@@ -71,38 +67,8 @@ public class DebugCommander {
 		return count == 1;
 	}
 	
-	private JSONArray processResult(ResultSet res) throws SQLException {
-//		JSONArray json = new JSONArray();
-//		ResultSetMetaData md = res.getMetaData();
-//		int numCols = md.getColumnCount();
-//
-//		List<String> colNames = IntStream.range(0, numCols)
-//		  .mapToObj(i -> {
-//		      try {
-//		          return md.getColumnName(i + 1);
-//		      } catch (SQLException e) {
-//		          e.printStackTrace();
-//		          return "?";
-//		      }
-//		  })
-//		  .collect(Collectors.toList());
-//
-//
-//		while (res.next()) {
-//		    JSONObject row = new JSONObject();
-//		    colNames.forEach(cn -> {
-//		            try {
-//						row.put(cn, res.getObject(cn));
-//					} catch (JSONException | SQLException e) {
-//						e.printStackTrace();
-//					}
-//		    });
-//		    json.put(row);
-//		}		
-//		return json;
-		
-
-		JSONArray json = new JSONArray();
+	private List<JSONObject> processResult(ResultSet res) throws SQLException {
+		ArrayList<JSONObject> json = new ArrayList<JSONObject>();
 		ResultSetMetaData rsmd = res.getMetaData();
 		int numColumns = rsmd.getColumnCount();
 
@@ -113,7 +79,7 @@ public class DebugCommander {
 		    String columnName = rsmd.getColumnName(i);
 		    obj.put(columnName, res.getObject(columnName));
 		  }
-		  json.put(obj);
+		  json.add(obj);
 		}
 		return json;
 	}
