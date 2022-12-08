@@ -2,6 +2,7 @@ package com.sirs.thecork.controller;
 
 import java.sql.ResultSet;
 
+import org.json.JSONArray;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,13 +24,13 @@ public class DebugController {
 				+ "<p>Welcome to TheCork REST API services!</p>";
 	}
 	
-	@GetMapping("/debug/demo/{name}")
+	@GetMapping("/demo/{name}")
 	public String getDemo(@PathVariable String name) {
 		return String.format("Hello %s!", name);
 	}
 
 	@GetMapping("/debug/restaurant/list")
-	public ResultSet listRestaurant() {
+	public JSONArray listRestaurant() {
 		return _commander.listRestaurant();
 	}
 

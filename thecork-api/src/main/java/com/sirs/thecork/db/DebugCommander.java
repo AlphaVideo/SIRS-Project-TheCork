@@ -3,7 +3,15 @@ package com.sirs.thecork.db;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class DebugCommander {
 	
@@ -13,9 +21,10 @@ public class DebugCommander {
 		_connection = DatabaseConnection.getConnection();
 	}
 	
-	public ResultSet listRestaurant() {
+	public JSONArray listRestaurant() {
 		PreparedStatement stmt;
 		ResultSet res = null;
+		JSONArray json = null;
 		
 		try {
 			stmt = _connection.prepareStatement("SELECT * FROM restaurant;");
@@ -25,6 +34,46 @@ public class DebugCommander {
 			// add info to logger
 			e.printStackTrace();
 		}
-		return res;
+		
+		try {
+			json = processResult(res);
+		}
+		catch (SQLException e) {
+			// add info to logger
+			e.printStackTrace();
+		}
+		
+		return json;
+	}
+	
+	private JSONArray processResult(ResultSet res) throws SQLException {
+		JSONArray json = new JSONArray();
+		ResultSetMetaData md = res.getMetaData();
+		int numCols = md.getColumnCount();
+
+		List<String> colNames = IntStream.range(0, numCols)
+		  .mapToObj(i -> {
+		      try {
+		          return md.getColumnName(i + 1);
+		      } catch (SQLException e) {
+		          e.printStackTrace();
+		          return "?";
+		      }
+		  })
+		  .collect(Collectors.toList());
+
+
+		while (res.next()) {
+		    JSONObject row = new JSONObject();
+		    colNames.forEach(cn -> {
+		            try {
+						row.put(cn, res.getObject(cn));
+					} catch (JSONException | SQLException e) {
+						e.printStackTrace();
+					}
+		    });
+		    json.put(row);
+		}		
+		return json;
 	}
 }
