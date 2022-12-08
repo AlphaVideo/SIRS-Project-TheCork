@@ -45,6 +45,7 @@ public class DebugCommander {
 		
 		try {
 			stmt = _connection.prepareStatement("INSERT INTO restaurant VALUES ?;");
+			stmt.setString(0,  name);
 			count = stmt.executeUpdate();
 		} catch (SQLException e) {
 			// add info to logger
@@ -60,6 +61,7 @@ public class DebugCommander {
 		
 		try {
 			stmt = _connection.prepareStatement("DELETE FROM restaurant WHERE name = ?;");
+			stmt.setString(0,  name);
 			count = stmt.executeUpdate();
 		} catch (SQLException e) {
 			// add info to logger
