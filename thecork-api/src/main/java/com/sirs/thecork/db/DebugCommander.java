@@ -44,7 +44,7 @@ public class DebugCommander {
 		int count;
 		
 		try {
-			stmt = _connection.prepareStatement("INSERT INTO restaurant VALUES ?;");
+			stmt = _connection.prepareStatement("INSERT INTO restaurant VALUES ('?');");
 			stmt.setString(1,  name);
 			count = stmt.executeUpdate();
 		} catch (SQLException e) {
@@ -60,7 +60,7 @@ public class DebugCommander {
 		int count;
 		
 		try {
-			stmt = _connection.prepareStatement("DELETE FROM restaurant WHERE name = ?;");
+			stmt = _connection.prepareStatement("DELETE FROM restaurant WHERE name = '?';");
 			stmt.setString(1,  name);
 			count = stmt.executeUpdate();
 		} catch (SQLException e) {
