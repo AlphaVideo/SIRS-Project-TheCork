@@ -46,6 +46,54 @@ public class DebugCommander {
 		return json;
 	}
 	
+	public JSONArray addRestaurant(String name) {
+		PreparedStatement stmt;
+		ResultSet res = null;
+		JSONArray json = null;
+		
+		try {
+			stmt = _connection.prepareStatement("INSERT INTO restaurant VALUES ?;");
+			res = stmt.executeQuery();
+		} catch (SQLException e) {
+			// add info to logger
+			e.printStackTrace();
+		}
+
+		try {
+			json = processResult(res);
+		}
+		catch (SQLException e) {
+			// add info to logger
+			e.printStackTrace();
+		}
+		
+		return json;
+	}
+
+	public JSONArray removeRestaurant(String name) {
+		PreparedStatement stmt;
+		ResultSet res = null;
+		JSONArray json = null;
+		
+		try {
+			stmt = _connection.prepareStatement("DELETE FROM restaurant WHERE name = ?;");
+			res = stmt.executeQuery();
+		} catch (SQLException e) {
+			// add info to logger
+			e.printStackTrace();
+		}
+
+		try {
+			json = processResult(res);
+		}
+		catch (SQLException e) {
+			// add info to logger
+			e.printStackTrace();
+		}
+		
+		return json;
+	}
+	
 	private JSONArray processResult(ResultSet res) throws SQLException {
 		JSONArray json = new JSONArray();
 		ResultSetMetaData md = res.getMetaData();
