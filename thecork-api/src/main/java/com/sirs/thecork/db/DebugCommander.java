@@ -39,28 +39,34 @@ public class DebugCommander {
 		return json;
 	}
 	
-	public void addRestaurant(String name) {
+	public boolean addRestaurant(String name) {
 		PreparedStatement stmt;
+		int count;
 		
 		try {
 			stmt = _connection.prepareStatement("INSERT INTO restaurant VALUES ?;");
-			stmt.executeQuery();
+			count = stmt.executeUpdate();
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
+			return false;
 		}
+		return count == 1;
 	}
 
-	public void removeRestaurant(String name) {
+	public boolean removeRestaurant(String name) {
 		PreparedStatement stmt;
+		int count;
 		
 		try {
 			stmt = _connection.prepareStatement("DELETE FROM restaurant WHERE name = ?;");
-			stmt.executeQuery();
+			count = stmt.executeUpdate();
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
+			return false;
 		}
+		return count == 1;
 	}
 	
 	private JSONArray processResult(ResultSet res) throws SQLException {
