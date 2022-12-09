@@ -1,8 +1,5 @@
 package com.sirs.thecork.controller;
 
-import java.sql.ResultSet;
-
-import org.json.JSONArray;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +28,7 @@ public class DebugController {
 
 	@GetMapping(value="/debug/restaurant/list", produces="application/json")
 	public String listRestaurant() {
-		return _commander.listRestaurant();
+		return _commander.listRestaurant().toString();
 	}
 
 	@GetMapping("/debug/restaurant/add/{name}")
