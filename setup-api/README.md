@@ -22,8 +22,7 @@ sudo netplan apply
 sudo ufw enable
 sudo ufw default deny INCOMING
 sudo ufw default allow ROUTED        #so VM1 has net access
-sudo ufw allow http
-sudo ufw allow https
+sudo ufw allow to any port 8080
 sudo ufw reload
 ```
 
