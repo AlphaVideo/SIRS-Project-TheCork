@@ -38,6 +38,6 @@ public class DebugController {
 
 	@GetMapping("/debug/restaurant/remove/{name}")
 	public String removeRestaurant(@PathVariable String name) {
-		return _commander.addRestaurant(name) ? "OK" : "NOK";
+		return _commander.removeRestaurant(name) ? "OK" : "NOK";
 	}
 }
