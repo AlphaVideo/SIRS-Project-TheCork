@@ -5,8 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class DebugCommander {
@@ -17,10 +17,10 @@ public class DebugCommander {
 		_connection = DatabaseConnection.getConnection();
 	}
 	
-	public List<JSONObject> listRestaurant() {
+	public JSONArray listRestaurant() {
 		PreparedStatement stmt;
 		ResultSet res = null;
-		List<JSONObject> json;
+		JSONArray json = null;
 		
 		try {
 			stmt = _connection.prepareStatement("SELECT * FROM restaurant;");
@@ -67,8 +67,8 @@ public class DebugCommander {
 		return count == 1;
 	}
 	
-	private List<JSONObject> processResult(ResultSet res) throws SQLException {
-		ArrayList<JSONObject> json = new ArrayList<JSONObject>();
+	private JSONArray processResult(ResultSet res) throws SQLException {
+		JSONArray json = new JSONArray();
 		ResultSetMetaData rsmd = res.getMetaData();
 		int numColumns = rsmd.getColumnCount();
 
@@ -79,7 +79,7 @@ public class DebugCommander {
 		    String columnName = rsmd.getColumnName(i);
 		    obj.put(columnName, res.getObject(columnName));
 		  }
-		  json.add(obj);
+		  json.put(obj);
 		}
 		return json;
 	}

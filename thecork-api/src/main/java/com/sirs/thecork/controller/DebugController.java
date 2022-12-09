@@ -1,8 +1,8 @@
 package com.sirs.thecork.controller;
 
-import java.util.List;
+import java.sql.ResultSet;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,8 +29,8 @@ public class DebugController {
 		return String.format("Hello %s!", name);
 	}
 
-	@GetMapping("/debug/restaurant/list")
-	public List<JSONObject> listRestaurant() {
+	@GetMapping(value="/debug/restaurant/list", produces="application/json")
+	public String listRestaurant() {
 		return _commander.listRestaurant();
 	}
 
@@ -41,6 +41,6 @@ public class DebugController {
 
 	@GetMapping("/debug/restaurant/remove/{name}")
 	public String removeRestaurant(@PathVariable String name) {
-		return _commander.removeRestaurant(name) ? "OK" : "NOK";
+		return _commander.addRestaurant(name) ? "OK" : "NOK";
 	}
 }
