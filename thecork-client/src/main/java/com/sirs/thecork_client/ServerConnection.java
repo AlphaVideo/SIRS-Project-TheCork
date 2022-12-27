@@ -26,34 +26,30 @@ public class ServerConnection {
 		// TODO Auto-generated constructor stub
 	}
 
-	public void testInternet() throws NoSuchAlgorithmException, IOException {
-		URL url = new URL("https://192.168.1.3:8443");
-		
-		//SSLContext ctx = SSLContext.getInstance("TLS");
-		//SSLContext.setDefault(ctx);
-		// Falta inicializar com KeyManager
-		
-		HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-		
-		printConnInfo(connection);
-		printContent(connection);
-		
-		connection.setRequestMethod("GET");
-		connection.setDoOutput(true);
-		
-		System.out.println(connection.getInputStream());
-	}
+//	public void testInternet() throws NoSuchAlgorithmException, IOException {
+//		URL url = new URL("https://localhost:8443");
+//		
+//		//SSLContext ctx = SSLContext.getInstance("TLS");
+//		//SSLContext.setDefault(ctx);
+//		// Falta inicializar com KeyManager
+//		
+//		HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+//		
+//		printConnInfo(connection);
+//		printContent(connection);
+//		
+//		connection.setRequestMethod("GET");
+//		connection.setDoOutput(true);
+//		
+//		System.out.println(connection.getInputStream());
+//	}
 	
 	public void testInternet2() throws UnknownHostException, IOException {
 		SSLSocketFactory factory = (SSLSocketFactory) this.getSocketFactory();
-		SSLSocket socket = (SSLSocket) factory.createSocket("192.168.1.3", 8443);
+		SSLSocket socket = (SSLSocket) factory.createSocket("localhost", 8443);
 		
-		String[] enable = {"TLS_DH_anon_WITH_AES_128_CBC_SHA"};
+		String[] enable = {"TLS_AES_128_GCM_SHA256"};
         socket.setEnabledCipherSuites(enable);
-        String[] cipherSuites = socket.getEnabledCipherSuites();
-        for (int i = 0; i < cipherSuites.length; i++) {
-            System.out.println(cipherSuites[i]);
-        }
         socket.addHandshakeCompletedListener(new HandshakeCompletedListener() {
             public void handshakeCompleted(HandshakeCompletedEvent event) {
                 System.out.println("handshake done");
@@ -76,7 +72,7 @@ public class ServerConnection {
 	        kmf = KeyManagerFactory.getInstance("SunX509");
 	        ks = KeyStore.getInstance("JKS");
 	        
-	        ks.load(new FileInputStream("/home/seed/TheCork/thecork-client/resources/client.jks"), passphrase);
+	        ks.load(this.getClass().getResourceAsStream("client.jks"), passphrase);
 	        kmf.init(ks, passphrase);
 	        ctx.init(kmf.getKeyManagers(), null, null);
 	        ssf = ctx.getSocketFactory();
@@ -141,3 +137,4 @@ public class ServerConnection {
 			}
 	   }
 }
+
