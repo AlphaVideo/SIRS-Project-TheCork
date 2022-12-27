@@ -15,15 +15,8 @@ Instructions:
 ```
 sudo netplan try
 sudo netplan apply
-sudo ufw enable
-sudo ufw default deny INCOMING
-sudo ufw default deny ROUTED
-sudo ufw allow from 10.0.0.2 to any port 3306
-sudo ufw reload 
 ```
 
-Uncomplicated Firewall is persistent, and will keep changes through reboot.
-To deactive run `sudo ufw disable`.
 
 3) Use your preferred text editor to open the mysqld.cnf file. (/etc/mysql/mysql.conf.d/mysqld.cnf)
    Scroll down to the *bind-address* line and change the IP address to 0.0.0.0 .
