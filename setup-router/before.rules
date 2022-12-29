@@ -11,10 +11,14 @@
 # NAT table rules
 *nat
 :POSTROUTING ACCEPT [0:0]
+:PREROUTING ACCEPT [0:0]
 
-# Forward traffic through enp0s9 - Change to match your out-interface
+# Forward traffic through enp0s10
 -A POSTROUTING -s 10.0.0.1 -o enp0s10 -j MASQUERADE
 -A POSTROUTING -s 10.1.1.2 -o enp0s10 -j MASQUERADE
+
+# Allow API to be accessed externally as a server
+-A PREROUTING -i enp0s9 -p tcp --dst 192.168.1.3 -j DNAT --to-destination 10.1.1.2:8443
 
 # don't delete the 'COMMIT' line or these nat table rules won't
 # be processed
