@@ -9,10 +9,10 @@ import com.sirs.thecork.db.DebugCommander;
 @RestController
 public class DebugController {
 
-	//DebugCommander _commander = null;
+	DebugCommander _commander = null;
 	
 	public DebugController() {
-		//_commander = new DebugCommander();
+		_commander = new DebugCommander();
 	}
 
 	@GetMapping("/")
@@ -26,18 +26,18 @@ public class DebugController {
 		return String.format("Hello %s!", name);
 	}
 
-//	@GetMapping(value="/debug/restaurant/list", produces="application/json")
-//	public String listRestaurant() {
-//		return _commander.listRestaurant().toString();
-//	}
-//
-//	@GetMapping("/debug/restaurant/add/{name}")
-//	public String addRestaurant(@PathVariable String name) {
-//		return _commander.addRestaurant(name) ? "OK" : "NOK";
-//	}
-//
-//	@GetMapping("/debug/restaurant/remove/{name}")
-//	public String removeRestaurant(@PathVariable String name) {
-//		return _commander.removeRestaurant(name) ? "OK" : "NOK";
-//	}
+	@GetMapping(value="/debug/restaurant/list", produces="application/json")
+	public String listRestaurant() {
+		return _commander.listRestaurant().toString();
+	}
+
+	@GetMapping("/debug/restaurant/add/{name}")
+	public String addRestaurant(@PathVariable String name) {
+		return _commander.addRestaurant(name) ? "OK" : "NOK";
+	}
+
+	@GetMapping("/debug/restaurant/remove/{name}")
+	public String removeRestaurant(@PathVariable String name) {
+		return _commander.removeRestaurant(name) ? "OK" : "NOK";
+	}
 }
