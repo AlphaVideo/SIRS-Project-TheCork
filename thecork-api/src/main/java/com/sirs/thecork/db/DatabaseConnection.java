@@ -13,7 +13,7 @@ public class DatabaseConnection implements AutoCloseable {
 		// get logger
 	    try
 	    {
-	        String url = "jdbc:mysql://10.0.0.1:3306/thecork";
+	        String url = "jdbc:mysql://10.0.0.1:3306/thecork?useSSL=true&requireSSL=true&verifyServerCertificate=false";
 	        Class.forName ("com.mysql.cj.jdbc.Driver");
 	        _conn = DriverManager.getConnection (url,"sirs","sirs");
 	        // add info to logger
