@@ -58,16 +58,12 @@ public class CustomerCommander {
                 pass_hash.append(hex);
             }
 
-            //Check if generated pass_hash matches user's
-            stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ? AND pass_hash = ?;");
-            stmt.setString(1, user);
-            stmt.setString(2, pass_hash.toString());
-			res = stmt.executeQuery();	
-            
-            if(!res.isBeforeFirst()) {
-                //Empty
+            String dbPassHash = res.getString("pass_hash");
+
+            //Wrong Password 
+            if(!pass_hash.toString().equals(dbPassHash)) {
                 return false;
-            }
+            }   
             
 		} catch (SQLException e) {
 			// add info to logger
