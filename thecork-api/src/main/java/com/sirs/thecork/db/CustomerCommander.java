@@ -80,7 +80,7 @@ public class CustomerCommander {
         return true;
 	}
 
-    public boolean reservation(String user, String restaurant, Int nPeople, String datetime) {
+    public boolean reservation(String user, String restaurant, int nPeople, String datetime) {
 		PreparedStatement stmt;
 		ResultSet res = null;
 		
@@ -103,25 +103,22 @@ public class CustomerCommander {
                 stmt.setString(1, user);
                 stmt.setString(2, restaurant);
                 stmt.setString(3, datetime);
-                stmt.setString(4, nPeople);
+                stmt.setInt(4, nPeople);
                 stmt.executeQuery();	
 
             }
-            
-            }   
+              
             
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+		} 
 
         //Everything succeeded
         return true;
 	}
 	
-    public boolean buy_giftcard(String user, Int value) {
+    public boolean buy_giftcard(String user, int value) {
 		PreparedStatement stmt;
 		ResultSet res = null;
 		
@@ -132,25 +129,22 @@ public class CustomerCommander {
             //TODO: check if sql statement works and return the id and nonce to the customer
             stmt = _connection.prepareStatement("UPDATE TOP (1) giftcards SET owner = ? WHERE owner = NULL and value = ?;");
             stmt.setString(1, user);
-            stmt.setString(2, value);
+            stmt.setInt(2, value);
             stmt.executeQuery();	
 
             //TODO: Create a new giftcard
-            
-            }   
+               
             
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+		} 
 
         //Everything succeeded
         return true;
 	}
 
-    public boolean redeem_giftcard(String user, Int id, Int nonce) {
+    public boolean redeem_giftcard(String user, int id, int nonce) {
 		PreparedStatement stmt;
 		ResultSet res = null;
 		
@@ -158,8 +152,8 @@ public class CustomerCommander {
             //We can assume the user exists because he already went through the login process
             //First we must find if giftcard exists and it belongs to the user
 			stmt = _connection.prepareStatement("SELECT * FROM giftcards WHERE id = ? and nonce = ? and owner = ?;");
-            stmt.setString(1, id);
-            stmt.setString(2, nonce);
+            stmt.setInt(1, id);
+            stmt.setInt(2, nonce);
             stmt.setString(3, user);
 			res = stmt.executeQuery();		
 
@@ -173,11 +167,11 @@ public class CustomerCommander {
             else {
                 
                 //Remove Giftcard From Database
-                Int value = res.getInt("value");
+                int value = res.getInt("value");
 
                 stmt = _connection.prepareStatement("DELETE FROM giftcards WHERE id = ? and nonce = ? and owner = ?;");
-                stmt.setString(1, id);
-                stmt.setString(2, nonce);
+                stmt.setInt(1, id);
+                stmt.setInt(2, nonce);
                 stmt.setString(3, user);
                 stmt.executeQuery();
 
@@ -186,32 +180,28 @@ public class CustomerCommander {
                 stmt.setString(1, user);
                 res = stmt.executeQuery();	
 
-                Int wallet = res.getInt("wallet");
+                int wallet = res.getInt("wallet");
 
                 //Add the value of the Giftcard
-                wallet += value
+                wallet += value;
 
                 stmt = _connection.prepareStatement("Update client SET wallet = ? WHERE username = ?;");
-                stmt.setString(1, wallet);
+                stmt.setInt(1, wallet);
                 stmt.setString(2, user);
                 stmt.executeQuery();	
 
             }
             
-            }   
-            
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+		} 
 
         //Everything succeeded
         return true;
 	}
 
-    public boolean gift_giftcard(String user, String target, Int id, Int nonce) {
+    public boolean gift_giftcard(String user, String target, int id, int nonce) {
 		PreparedStatement stmt;
 		ResultSet res = null;
 		
@@ -219,8 +209,8 @@ public class CustomerCommander {
             //We can assume the user exists because he already went through the login process
             //First we must find if giftcard exists and it belongs to the user
 			stmt = _connection.prepareStatement("SELECT * FROM giftcards WHERE id = ? and nonce = ? and owner = ?;");
-            stmt.setString(1, id);
-            stmt.setString(2, nonce);
+            stmt.setInt(1, id);
+            stmt.setInt(2, nonce);
             stmt.setString(3, user);
 			stmt.executeQuery();		
 
@@ -245,23 +235,22 @@ public class CustomerCommander {
                     //Change Ownership
                     stmt = _connection.prepareStatement("Update giftcard SET owner = ? WHERE id = ? and nonce = ?;");
                     stmt.setString(1, target);
-                    stmt.setString(2, id);
-                    stmt.setString(3, nonce);
+                    stmt.setInt(2, id);
+                    stmt.setInt(3, nonce);
                     stmt.executeQuery();
                 }   
             
-		} catch (SQLException e) {
+		    }
+        } catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+		}
 
         //Everything succeeded
         return true;
 	}
 
-     public boolean check_balance(String user) {
+    public boolean check_balance(String user) {
 		PreparedStatement stmt;
 		ResultSet res = null;
 		
@@ -272,7 +261,7 @@ public class CustomerCommander {
             stmt.setString(1, user);
 			res = stmt.executeQuery();	
 
-            Int balance = res.getInt("wallet");
+            int balance = res.getInt("wallet");
 
             //TODO: Return Balance somehow
  
@@ -280,9 +269,7 @@ public class CustomerCommander {
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+		} 
 
         //Everything succeeded
         return true;

@@ -24,22 +24,22 @@ public class CustomerController {
 	}
 
 	@PostMapping("/reservation")
-	public String reservation(@RequestParam("user") String user, @RequestParam("restarurant") String restarurant, @RequestParam("nPeople") Int nPeople, @RequestParam("datetime") String datetime) {
+	public String reservation(@RequestParam("user") String user, @RequestParam("restarurant") String restarurant, @RequestParam("nPeople") int nPeople, @RequestParam("datetime") String datetime) {
 		return _commander.reservation(user, restarurant, nPeople, datetime) ? "OK" : "NOK";
 	}
 
 	@PostMapping("/buy_giftcard")
-	public String buy_giftcard(@RequestParam("user") String user, @RequestParam("value") Int value) {
+	public String buy_giftcard(@RequestParam("user") String user, @RequestParam("value") int value) {
 		return _commander.buy_giftcard(user, value) ? "OK" : "NOK";
 	}
 
 	@PostMapping("/redeem_giftcard")
-	public String redeem_giftcard(@RequestParam("user") String user, @RequestParam("id") Int id, @RequestParam("nonce") Int nonce) {
+	public String redeem_giftcard(@RequestParam("user") String user, @RequestParam("id") int id, @RequestParam("nonce") int nonce) {
 		return _commander.redeem_giftcard(user, id, nonce) ? "OK" : "NOK";
 	}
 
 	@PostMapping("/gift_giftcard")
-	public String gift_giftcard(@RequestParam("user") String user, @RequestParam("target") String target, @RequestParam("id") Int id, @RequestParam("nonce") Int nonce) {
+	public String gift_giftcard(@RequestParam("user") String user, @RequestParam("target") String target, @RequestParam("id") int id, @RequestParam("nonce") int nonce) {
 		return _commander.gift_giftcard(user, target, id, nonce) ? "OK" : "NOK";
 	}
 
