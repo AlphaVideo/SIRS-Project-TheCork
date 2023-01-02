@@ -75,7 +75,8 @@ public class CustomerCommander {
         }
 
         //Everything succeeded -> generate new auth token
-        _tokenManager.generateToken(user);
+        String token = _tokenManager.generateToken(user);
+        System.out.println(token);
         return true;
 	}
 	

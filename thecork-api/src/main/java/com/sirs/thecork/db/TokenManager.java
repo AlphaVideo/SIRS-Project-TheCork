@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 import java.security.SecureRandom;
 import org.json.JSONArray;
@@ -37,9 +38,7 @@ public class TokenManager {
      */
     public String generateToken(String user)
     {
-        String newToken = null;
         PreparedStatement stmt;
-		int count;
 
         //Generate a secure random number
         SecureRandom nonceGen = new SecureRandom();
@@ -56,25 +55,26 @@ public class TokenManager {
             tokenString.append(hex);
         }
 
-        System.out.println(tokenString);
+        //Get current timestamp
+        //Timestamp ts = new Timestamp(System.currentTimeMillis());
 
-        
+        try {
+            if(_type == USER_TYPE.CUSTOMER)
+			    stmt = _conn.prepareStatement("UPDATE client SET auth_token_nonce=?, token_exp_date=? WHERE username=?");
+            else
+                stmt = _conn.prepareStatement("UPDATE staff SET auth_token_nonce=?, token_exp_date=? WHERE username=?");
 
-
-        // try {
-		// 	stmt = _conn.prepareStatement("UPDATE client");
-		// 	stmt.setString(1,  user);
-		// 	count = stmt.executeUpdate();
-		// } catch (SQLException e) {
-		// 	// add info to logger
-		// 	e.printStackTrace();
-		// 	return newToken;
-		// }
+            stmt.setString(1, tokenString.toString());
+            stmt.setTimestamp(2, null, null);
+			stmt.setString(3,  user);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			// add info to logger
+			e.printStackTrace();
+			return null;
+		}
 		
-
-
-
-        return newToken;
+        return tokenString.toString();
     }
 
     /**
