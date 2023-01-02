@@ -16,9 +16,11 @@ import org.json.JSONObject;
 public class CustomerCommander {
 
     Connection _connection = null;
+    TokenManager _tokenManager = null;
 
 	public CustomerCommander() {
 		_connection = DatabaseConnection.getConnection();
+        _tokenManager = new TokenManager(_connection, false);
 	}
     
     public boolean loginCustomer(String user, String pass) {
@@ -73,6 +75,7 @@ public class CustomerCommander {
         }
 
         //Everything succeeded -> generate new auth token
+        _tokenManager.generateToken(user);
         return true;
 	}
 	
