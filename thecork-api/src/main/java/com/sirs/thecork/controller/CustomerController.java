@@ -19,7 +19,7 @@ public class CustomerController {
 	}
 
 	@PostMapping("/customer_login")
-	public boolean loginCustomer(@RequestParam("user") String user, @RequestParam("pass") String pass) {
-		return _commander.loginCustomer(user, pass);
+	public String loginCustomer(@RequestParam("user") String user, @RequestParam("pass") String pass) {
+		return _commander.loginCustomer(user, pass) ? "OK" : "NOK";
 	}
 }
