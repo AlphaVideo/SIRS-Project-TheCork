@@ -23,12 +23,15 @@ class AppMode(Enum):
     CUSTOMER = 1
     STAFF = 2
 
-def connection_test():
-    resp = requests.get("https://192.168.1.3:8443", verify="root-ca.crt")
 
+def print_http_response(resp):
     print("Status: {} {}".format(resp.status_code, resp.reason))
     print("Headers: {}".format(resp.headers))
     print("\nContent:\n{}".format(resp.text))
+
+def connection_test():
+    resp = requests.get("https://192.168.1.3:8443", verify="root-ca.crt")
+    print_http_response(resp)
 
 
 def login():
@@ -52,6 +55,7 @@ def login():
     else:
         resp = requests.post("https://192.168.1.3:8443/staff_login", verify="root-ca.crt", params={"user": username, "pass": password} )
     
+    print_http_response(resp)
     
 
         
