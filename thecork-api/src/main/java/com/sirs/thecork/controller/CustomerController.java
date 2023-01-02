@@ -22,4 +22,29 @@ public class CustomerController {
 	public String loginCustomer(@RequestParam("user") String user, @RequestParam("pass") String pass) {
 		return _commander.loginCustomer(user, pass) ? "OK" : "NOK";
 	}
+
+	@PostMapping("/reservation")
+	public String reservation(@RequestParam("user") String user, @RequestParam("restarurant") String restarurant, @RequestParam("nPeople") Int nPeople, @RequestParam("datetime") String datetime) {
+		return _commander.reservation(user, restarurant, nPeople, datetime) ? "OK" : "NOK";
+	}
+
+	@PostMapping("/buy_giftcard")
+	public String buy_giftcard(@RequestParam("user") String user, @RequestParam("value") Int value) {
+		return _commander.buy_giftcard(user, value) ? "OK" : "NOK";
+	}
+
+	@PostMapping("/redeem_giftcard")
+	public String redeem_giftcard(@RequestParam("user") String user, @RequestParam("id") Int id, @RequestParam("nonce") Int nonce) {
+		return _commander.redeem_giftcard(user, id, nonce) ? "OK" : "NOK";
+	}
+
+	@PostMapping("/gift_giftcard")
+	public String gift_giftcard(@RequestParam("user") String user, @RequestParam("target") String target, @RequestParam("id") Int id, @RequestParam("nonce") Int nonce) {
+		return _commander.gift_giftcard(user, target, id, nonce) ? "OK" : "NOK";
+	}
+
+	@PostMapping("/check_balance")
+	public String check_balance(@RequestParam("user") String user) {
+		return _commander.check_balance(user) ? "OK" : "NOK";
+	}
 }
