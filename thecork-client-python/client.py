@@ -20,7 +20,7 @@ token = None
 # Data types and such
 #
 class AppMode(Enum):
-    CLIENT = 1
+    CUSTOMER = 1
     STAFF = 2
 
 def connection_test():
@@ -32,7 +32,7 @@ def connection_test():
 
 
 def login():
-    print("Logging in as " + ("client." if mode == AppMode.CLIENT else "staff."))
+    print("Logging in as " + ("customer." if mode == AppMode.CUSTOMER else "staff."))
 
     while True:
         username = input("Please insert username.\n> ")
@@ -47,10 +47,10 @@ def login():
         
         break
     
-    if mode == AppMode.CLIENT:
-        resp = requests.post("https://192.168.1.3:8443/client_login", verify="root-ca.crt", json={"user": username, "pass": password} )
+    if mode == AppMode.CUSTOMER:
+        resp = requests.post("https://192.168.1.3:8443/customer_login", verify="root-ca.crt", params={"user": username, "pass": password} )
     else:
-        resp = requests.post("https://192.168.1.3:8443/staff_login", verify="root-ca.crt", json={"user": username, "pass": password} )
+        resp = requests.post("https://192.168.1.3:8443/staff_login", verify="root-ca.crt", params={"user": username, "pass": password} )
     
     
 
