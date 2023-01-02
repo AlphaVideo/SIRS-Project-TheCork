@@ -44,11 +44,11 @@ public class CustomerCommander {
                 password = password.concat(salt);
             }
 
-            //Hash received password+salt
+            //Hash = Sha256(password+salt)
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] encodedHash = md.digest(password.getBytes(StandardCharsets.UTF_8));
 
-            //Password hash must come in hex format for query
+            //Password hash must be decoded to hex for comparison with DB
             StringBuilder pass_hash = new StringBuilder(2*encodedHash.length);
             for (int i = 0; i < encodedHash.length; i++) {
                 String hex = Integer.toHexString(0xff&encodedHash[i]);
