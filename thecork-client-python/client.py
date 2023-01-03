@@ -17,6 +17,7 @@ sslkeylog.set_keylog('sslkeys_{}.log'.format(datetime.now().strftime("%Y-%m-%d_%
 #
 auth_token = None
 operation = 0
+op_resp = None
 
 #
 # Data types and such
@@ -121,6 +122,8 @@ def reservation():
 
     print_http_response(resp)
 
+    return resp
+
 
 def buy_giftcard():  
     print("Please select the value of the giftcard you wish to buy:")
@@ -141,6 +144,8 @@ def buy_giftcard():
     resp = requests.post("https://192.168.1.3:8443/buy_giftcard", verify="root-ca.crt", params={"auth_token": auth_token, "value": value} )
 
     print_http_response(resp)
+
+    return resp
     
 def redeem_giftcard():
 
@@ -160,6 +165,8 @@ def redeem_giftcard():
     resp = requests.post("https://192.168.1.3:8443/giftcard/redeem", verify="root-ca.crt", params={"auth_token": auth_token, "id": giftcard_id, "nonce": giftcard_nonce} )
 
     print_http_response(resp)
+
+    return resp
 
 def gift_giftcard():
 
@@ -185,6 +192,8 @@ def gift_giftcard():
 
     print_http_response(resp)
 
+    return resp
+
 def create_giftcard():
 
     print("Please select the value of the giftcard you wish to create:")
@@ -209,10 +218,14 @@ def create_giftcard():
 
     print_http_response(resp)
 
+    return resp
+
 def check_balance():
     resp = requests.post("https://192.168.1.3:8443/check_balance", verify="root-ca.crt", params={"auth_token": auth_token} )
 
     print_http_response(resp)
+
+    return resp
 
 
 
@@ -244,6 +257,12 @@ auth_token = login()
 
 if mode == AppMode.CUSTOMER:
     while operation != 6:
+
+        #Check if token has expired
+        if(op_resp != None and op_resp.json()["status"] == "ERROR" and op_resp.json()["reason"] == "INVALID_AUTH_TOKEN"):
+            print("Session has expired. Please login again.")
+            auth_token = login()
+
         print("Select Operation:")
         print("1) Book a Reservation")
         print("2) Buy a Giftcard")
@@ -266,22 +285,28 @@ if mode == AppMode.CUSTOMER:
                     operation_not_selected = False
 
         if operation == 1:
-            reservation()
+            op_resp = reservation()
 
         if operation == 2:
-            buy_giftcard()
+            op_resp = buy_giftcard()
 
         if operation == 3:
-            redeem_giftcard()
+            op_resp = redeem_giftcard()
 
         if operation == 4:
-            gift_giftcard()
+            op_resp = gift_giftcard()
 
         if operation == 5:
-            check_balance()
+            op_resp = check_balance()
 
 if mode == AppMode.STAFF:
     while operation != 2:
+
+        #Check if token has expired
+        if(op_resp != None and op_resp.json()["status"] == "ERROR" and op_resp.json()["reason"] == "INVALID_AUTH_TOKEN"):
+            print("Session has expired. Please login again.")
+            auth_token = login()
+
         print("Select Operation:")
         print("1) Create a Giftcard")
         print("2) Quit")
@@ -300,5 +325,5 @@ if mode == AppMode.STAFF:
                     operation_not_selected = False
 
         if operation == 1:
-                create_giftcard()
+                op_resp = create_giftcard()
 
