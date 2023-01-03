@@ -202,7 +202,7 @@ def create_giftcard():
             else:
                 value_not_selected = False
 
-    resp = requests.post("https://192.168.1.3:8443/giftcard/create", verify="root-ca.crt", params={"value": value} )
+    resp = requests.post("https://192.168.1.3:8443/giftcard/create", verify="root-ca.crt", params={"auth_token": auth_token, "value": value} )
 
     print_http_response(resp)
 
