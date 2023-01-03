@@ -110,7 +110,7 @@ public class CustomerCommander {
                 stmt.setString(2, restaurant);
                 stmt.setString(3, datetime);
                 stmt.setInt(4, nPeople);
-                stmt.executeQuery();
+                stmt.executeUpdate();
             }
 
 		} catch (SQLException e) {
@@ -138,7 +138,7 @@ public class CustomerCommander {
             stmt = _connection.prepareStatement("UPDATE TOP (1) giftcards SET owner = ? WHERE owner = NULL and value = ?;");
             stmt.setString(1, user);
             stmt.setInt(2, value);
-            stmt.executeQuery();
+            stmt.executeUpdate();
 
             //create new giftcard
             create_giftcard(value);
@@ -186,7 +186,7 @@ public class CustomerCommander {
                 stmt.setInt(1, id);
                 stmt.setString(2, nonce);
                 stmt.setString(3, user);
-                stmt.executeQuery();
+                stmt.executeUpdate();
 
                 //Check how much money the user currently has
 			    stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ?;");
@@ -201,7 +201,7 @@ public class CustomerCommander {
                 stmt = _connection.prepareStatement("Update client SET wallet = ? WHERE username = ?;");
                 stmt.setInt(1, wallet);
                 stmt.setString(2, user);
-                stmt.executeQuery();
+                stmt.executeUpdate();
 
             }
 
@@ -254,7 +254,7 @@ public class CustomerCommander {
                     stmt.setString(1, target);
                     stmt.setInt(2, id);
                     stmt.setString(3, nonce);
-                    stmt.executeQuery();
+                    stmt.executeUpdate();
                 }
 		    }
         } catch (SQLException e) {
@@ -290,7 +290,7 @@ public class CustomerCommander {
 			stmt = _connection.prepareStatement("INSERT INTO giftcard VALUES (0, ?, NULL, ?);");
             stmt.setString(1, tokenString.toString());
             stmt.setInt(2, value);
-			res = stmt.executeQuery();
+			res = stmt.executeUpdate();
 
 
 		} catch (SQLException e) {
