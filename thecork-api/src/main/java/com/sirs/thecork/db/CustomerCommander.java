@@ -130,9 +130,10 @@ public class CustomerCommander {
             stmt = _connection.prepareStatement("UPDATE TOP (1) giftcards SET owner = ? WHERE owner = NULL and value = ?;");
             stmt.setString(1, user);
             stmt.setInt(2, value);
-            stmt.executeQuery();	
+            stmt.executeQuery();
 
-            //TODO: Create a new giftcard
+            //create new giftcard
+            create_giftcard(value);
                
             
 		} catch (SQLException e) {
@@ -144,7 +145,7 @@ public class CustomerCommander {
         return true;
 	}
 
-    public boolean redeem_giftcard(String user, int id, int nonce) {
+    public boolean redeem_giftcard(String user, int id, String nonce) {
 		PreparedStatement stmt;
 		ResultSet res = null;
 		
@@ -153,7 +154,7 @@ public class CustomerCommander {
             //First we must find if giftcard exists and it belongs to the user
 			stmt = _connection.prepareStatement("SELECT * FROM giftcards WHERE id = ? and nonce = ? and owner = ?;");
             stmt.setInt(1, id);
-            stmt.setInt(2, nonce);
+            stmt.setString(2, nonce);
             stmt.setString(3, user);
 			res = stmt.executeQuery();		
 
@@ -171,7 +172,7 @@ public class CustomerCommander {
 
                 stmt = _connection.prepareStatement("DELETE FROM giftcards WHERE id = ? and nonce = ? and owner = ?;");
                 stmt.setInt(1, id);
-                stmt.setInt(2, nonce);
+                stmt.setString(2, nonce);
                 stmt.setString(3, user);
                 stmt.executeQuery();
 
@@ -201,7 +202,7 @@ public class CustomerCommander {
         return true;
 	}
 
-    public boolean gift_giftcard(String user, String target, int id, int nonce) {
+    public boolean gift_giftcard(String user, String target, int id, String nonce) {
 		PreparedStatement stmt;
 		ResultSet res = null;
 		
@@ -210,7 +211,7 @@ public class CustomerCommander {
             //First we must find if giftcard exists and it belongs to the user
 			stmt = _connection.prepareStatement("SELECT * FROM giftcards WHERE id = ? and nonce = ? and owner = ?;");
             stmt.setInt(1, id);
-            stmt.setInt(2, nonce);
+            stmt.setString(2, nonce);
             stmt.setString(3, user);
 			stmt.executeQuery();		
 
@@ -236,7 +237,7 @@ public class CustomerCommander {
                     stmt = _connection.prepareStatement("Update giftcard SET owner = ? WHERE id = ? and nonce = ?;");
                     stmt.setString(1, target);
                     stmt.setInt(2, id);
-                    stmt.setInt(3, nonce);
+                    stmt.setString(3, nonce);
                     stmt.executeQuery();
                 }   
             
@@ -245,6 +246,42 @@ public class CustomerCommander {
 			// add info to logger
 			e.printStackTrace();
 		}
+
+        //Everything succeeded
+        return true;
+	}
+
+    public boolean create_giftcard(int value) {
+		PreparedStatement stmt;
+		ResultSet res = null;
+		
+		try {
+
+            //Generate a secure random number
+            SecureRandom nonceGen = new SecureRandom();
+            byte nonceBytes[] = new byte[8]; //Equivalent to 16 hex chars
+            nonceGen.nextBytes(nonceBytes); // Stores random bytes in nonce byte array
+
+            //Convert nonce bytes to hex string to store in DB
+            StringBuilder tokenString = new StringBuilder(2*nonceBytes.length);
+            for (int i = 0; i < nonceBytes.length; i++) {
+                String hex = Integer.toHexString(0xff&nonceBytes[i]);
+                if(hex.length() == 1) 
+                    tokenString.append('0');
+                
+                tokenString.append(hex);
+            }
+
+			stmt = _connection.prepareStatement("INSERT INTO giftcard VALUES (0, ?, NULL, ?);");
+            stmt.setString(1, tokenString.toString())
+            stmt.setInt(2, value);
+			res = stmt.executeQuery();	
+ 
+            
+		} catch (SQLException e) {
+			// add info to logger
+			e.printStackTrace();
+		} 
 
         //Everything succeeded
         return true;

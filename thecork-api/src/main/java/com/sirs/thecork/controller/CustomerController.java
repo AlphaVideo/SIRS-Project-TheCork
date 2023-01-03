@@ -34,13 +34,18 @@ public class CustomerController {
 	}
 
 	@PostMapping("/redeem_giftcard")
-	public String redeem_giftcard(@RequestParam("user") String user, @RequestParam("id") int id, @RequestParam("nonce") int nonce) {
+	public String redeem_giftcard(@RequestParam("user") String user, @RequestParam("id") int id, @RequestParam("nonce") String nonce) {
 		return _commander.redeem_giftcard(user, id, nonce) ? "OK" : "NOK";
 	}
 
 	@PostMapping("/gift_giftcard")
-	public String gift_giftcard(@RequestParam("user") String user, @RequestParam("target") String target, @RequestParam("id") int id, @RequestParam("nonce") int nonce) {
+	public String gift_giftcard(@RequestParam("user") String user, @RequestParam("target") String target, @RequestParam("id") int id, @RequestParam("nonce") String nonce) {
 		return _commander.gift_giftcard(user, target, id, nonce) ? "OK" : "NOK";
+	}
+
+	@PostMapping("/create_giftcard")
+	public String create_giftcard(@RequestParam("value") int value) {
+		return _commander.create_giftcard(value) ? "OK" : "NOK";
 	}
 
 	@PostMapping("/check_balance")

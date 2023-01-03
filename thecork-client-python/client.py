@@ -116,7 +116,7 @@ def reservation():
 
 
 def buy_giftcard():  
-    print("Please select the price of the giftcard you wish to buy:")
+    print("Please select the value of the giftcard you wish to buy:")
     print("1) 10€\n2) 25€\n3) 50€\n4) 100€")
 
     value_not_selected = True
@@ -178,6 +178,27 @@ def gift_giftcard():
 
     print_http_response(resp)
 
+def create_giftcard():
+
+    print("Please select the value of the giftcard you wish to create:")
+    print("1) 10€\n2) 25€\n3) 50€\n4) 100€")
+
+    value_not_selected = True
+    while value_not_selected:
+        try:
+            value = int(input("> "))
+        except ValueError:
+            print("Please select a valid number. (1, 2, 3 or 4)")
+        else:
+            if value not in [1, 2, 3, 4]:
+                print("Please select a valid number. (1, 2, 3 or 4)")
+            else:
+                value_not_selected = False
+
+    resp = requests.post("https://192.168.1.3:8443/create_giftcard", verify="root-ca.crt", params={"value": value} )
+
+    print_http_response(resp)
+
 def check_balance():
 
     resp = requests.post("https://192.168.1.3:8443/check_balance", verify="root-ca.crt", params={"user": username} )
@@ -228,10 +249,10 @@ if mode == AppMode.CUSTOMER:
             try:
                 operation = int(input("> "))
             except ValueError:
-                print("Please select a valid number. (1 or 2)")
+                print("Please select a valid number. (1, 2, 3, 4, 5 or 6)")
             else:
-                if operation not in [1, 2, 3, 4, 5]:
-                    print("Please select a valid app mode. (1 or 2)")
+                if operation not in [1, 2, 3, 4, 5, 6]:
+                    print("Please select a valid operation. (1, 2, 3, 4, 5 or 6)")
                 else:
                     operation_not_selected = False
 
@@ -249,3 +270,26 @@ if mode == AppMode.CUSTOMER:
 
         if operation == 5:
             check_balance()
+
+if mode == AppMode.STAFF:
+    while operation != 2:
+        print("Select Operation:")
+        print("1) Create a Giftcard")
+        print("2) Logout")
+
+        #Obtain Operation
+        operation_not_selected = True
+        while operation_not_selected:
+            try:
+                operation = int(input("> "))
+            except ValueError:
+                print("Please select a valid number. (1 or 2)")
+            else:
+                if operation not in [1, 2]:
+                    print("Please select a valid operation. (1 or 2)")
+                else:
+                    operation_not_selected = False
+
+        if operation == 1:
+                create_giftcard()
+
