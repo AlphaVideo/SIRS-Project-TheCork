@@ -56,8 +56,12 @@ def login():
         resp = requests.post("https://192.168.1.3:8443/login/customer", verify="root-ca.crt", params={"user": username, "pass": password} )
     else:
         resp = requests.post("https://192.168.1.3:8443/login/staff", verify="root-ca.crt", params={"user": username, "pass": password} )
-    
+
+    data = resp.json()
     print_http_response(resp)
+    
+    #Change global token
+    return data["auth_token"]
 
 def is_valid_date(year, month, day):
     yearInt = int(year)
@@ -201,8 +205,8 @@ def create_giftcard():
     print_http_response(resp)
 
 def check_balance():
-
-    resp = requests.get("https://192.168.1.3:8443/check_balance", verify="root-ca.crt", params={"auth_token": auth_token} )
+    print(auth_token)
+    resp = requests.post("https://192.168.1.3:8443/check_balance", verify="root-ca.crt", params={"auth_token": auth_token} )
 
     print_http_response(resp)
 
@@ -232,7 +236,7 @@ while mode_not_selected:
 mode = AppMode(mode_input)
 
 #Authenticate and gain valid token
-login()
+auth_token = login()
 
 if mode == AppMode.CUSTOMER:
     while operation != 6:
