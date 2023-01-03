@@ -3,6 +3,7 @@ import requests
 import sslkeylog
 from datetime import datetime
 from enum import Enum
+import json
 
 # This is only to supress certificate warnings
 urllib3.disable_warnings(urllib3.exceptions.SecurityWarning)
@@ -14,7 +15,7 @@ sslkeylog.set_keylog('sslkeys_{}.log'.format(datetime.now().strftime("%Y-%m-%d_%
 #
 # Variables and such
 #
-token = None
+auth_token = None
 username = ""
 operation = 0
 
@@ -27,9 +28,8 @@ class AppMode(Enum):
 
 
 def print_http_response(resp):
-    print("Status: {} {}".format(resp.status_code, resp.reason))
-    print("Headers: {}".format(resp.headers))
-    print("\nContent:\n{}".format(resp.text))
+    jsonObj = json.loads(resp.text)
+    print(json.dumps(jsonObj, indent=2))
 
 def connection_test():
     resp = requests.get("https://192.168.1.3:8443", verify="root-ca.crt")
@@ -53,15 +53,16 @@ def login():
         break
     
     if mode == AppMode.CUSTOMER:
-        resp = requests.post("https://192.168.1.3:8443/customer_login", verify="root-ca.crt", params={"user": username, "pass": password} )
+        resp = requests.post("https://192.168.1.3:8443/login/customer", verify="root-ca.crt", params={"user": username, "pass": password} )
     else:
-        resp = requests.post("https://192.168.1.3:8443/staff_login", verify="root-ca.crt", params={"user": username, "pass": password} )
+        resp = requests.post("https://192.168.1.3:8443/login/staff", verify="root-ca.crt", params={"user": username, "pass": password} )
     
     print_http_response(resp)
 
 def is_valid_date(year, month, day):
+    yearInt = int(year)
     day_count_for_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    if year%4==0 and (year%100 != 0 or year%400==0):
+    if yearInt%4==0 and (yearInt%100 != 0 or yearInt%400==0):
         day_count_for_month[2] = 29
     return (1 <= month <= 12 and 1 <= day <= day_count_for_month[month])
     
@@ -81,7 +82,7 @@ def reservation():
 
         date = input("Please insert the date you would like to book for. (Please use the format YYYY-MM-DD)\n> ")
         date_parse = date.split('-')
-        if len(date_parse != 3):
+        if len(date_parse) != 3:
             print("Date inserted isn't valid.")
             continue
 
@@ -110,7 +111,7 @@ def reservation():
 
     datetime = date + " " + time + ":00"
 
-    resp = requests.post("https://192.168.1.3:8443/reservation", verify="root-ca.crt", params={"user": username, "restaurant": restaurant, "nPeople": nPeople, "datetime": datetime} )
+    resp = requests.post("https://192.168.1.3:8443/reservation/make", verify="root-ca.crt", params={"user": username, "restaurant": restaurant, "nPeople": nPeople, "datetime": datetime} )
 
     print_http_response(resp)
 
@@ -150,7 +151,7 @@ def redeem_giftcard():
             
         break
 
-    resp = requests.post("https://192.168.1.3:8443/redeem_giftcard", verify="root-ca.crt", params={"user": username, "id": giftcard_id, "nonce": giftcard_nonce} )
+    resp = requests.post("https://192.168.1.3:8443/giftcard/redeem", verify="root-ca.crt", params={"user": username, "id": giftcard_id, "nonce": giftcard_nonce} )
 
     print_http_response(resp)
 
@@ -174,7 +175,7 @@ def gift_giftcard():
             
         break
 
-    resp = requests.post("https://192.168.1.3:8443/gift_giftcard", verify="root-ca.crt", params={"user": username, "target": target, "id": giftcard_id, "nonce": giftcard_nonce} )
+    resp = requests.post("https://192.168.1.3:8443/giftcard/give", verify="root-ca.crt", params={"user": username, "target": target, "id": giftcard_id, "nonce": giftcard_nonce} )
 
     print_http_response(resp)
 
@@ -195,13 +196,13 @@ def create_giftcard():
             else:
                 value_not_selected = False
 
-    resp = requests.post("https://192.168.1.3:8443/create_giftcard", verify="root-ca.crt", params={"value": value} )
+    resp = requests.post("https://192.168.1.3:8443/giftcard/create", verify="root-ca.crt", params={"value": value} )
 
     print_http_response(resp)
 
 def check_balance():
 
-    resp = requests.post("https://192.168.1.3:8443/check_balance", verify="root-ca.crt", params={"user": username} )
+    resp = requests.get("https://192.168.1.3:8443/check_balance", verify="root-ca.crt", params={"auth_token": auth_token} )
 
     print_http_response(resp)
 
@@ -241,7 +242,7 @@ if mode == AppMode.CUSTOMER:
         print("3) Redeem a Giftcard")
         print("4) Gift a Giftcard")
         print("5) Check Current Balance")
-        print("6) Logout")
+        print("6) Quit")
 
         #Obtain Operation
         operation_not_selected = True
@@ -275,7 +276,7 @@ if mode == AppMode.STAFF:
     while operation != 2:
         print("Select Operation:")
         print("1) Create a Giftcard")
-        print("2) Logout")
+        print("2) Quit")
 
         #Obtain Operation
         operation_not_selected = True
