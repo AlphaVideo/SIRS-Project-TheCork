@@ -94,7 +94,10 @@ public class TokenManager {
         Timestamp exp;
 
         try {
-            stmt = _conn.prepareStatement("SELECT username, token_exp_time FROM client WHERE auth_token=?;");
+            if(_type == USER_TYPE.CUSTOMER)
+                stmt = _conn.prepareStatement("SELECT username, token_exp_time FROM client WHERE auth_token=?;");
+            else
+                stmt = _conn.prepareStatement("SELECT username, token_exp_time FROM staff WHERE auth_token=?;");
             System.out.println(stmt);
             stmt.setString(1, tk);
             res = stmt.executeQuery();
@@ -107,7 +110,7 @@ public class TokenManager {
             else {
                 res.next();
             }
-            
+
             user = res.getString("username");
             System.out.println(user);
             exp = res.getTimestamp("token_exp_time");
