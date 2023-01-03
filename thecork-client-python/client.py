@@ -190,16 +190,19 @@ def create_giftcard():
     print("Please select the value of the giftcard you wish to create:")
     print("1) 10€\n2) 25€\n3) 50€\n4) 100€")
 
+    value = None
+    values = {1: 10, 2: 25, 3: 50, 4: 100}
     value_not_selected = True
     while value_not_selected:
         try:
-            value = int(input("> "))
+            value_choice = int(input("> "))
         except ValueError:
             print("Please select a valid number. (1, 2, 3 or 4)")
         else:
-            if value not in [1, 2, 3, 4]:
+            if value_choice not in [1, 2, 3, 4]:
                 print("Please select a valid number. (1, 2, 3 or 4)")
             else:
+                value = values[value_choice]
                 value_not_selected = False
 
     resp = requests.post("https://192.168.1.3:8443/giftcard/create", verify="root-ca.crt", params={"auth_token": auth_token, "value": value} )
