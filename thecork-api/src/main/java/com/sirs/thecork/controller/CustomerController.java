@@ -24,8 +24,8 @@ public class CustomerController {
 	}
 
 	@PostMapping(value="/reservation/create", produces="application/json")
-	public String reservation(@RequestParam("auth_token") String auth_token, @RequestParam("restarurant") String restarurant, @RequestParam("nPeople") int nPeople, @RequestParam("datetime") String datetime) {
-		return _commander.reservation(auth_token, restarurant, nPeople, datetime);
+	public String reservation(@RequestParam("auth_token") String auth_token, @RequestParam("restaurant") String restaurant, @RequestParam("nPeople") int nPeople, @RequestParam("datetime") String datetime) {
+		return _commander.reservation(auth_token, restaurant, nPeople, datetime);
 	}
 
 	@PostMapping(value="/giftcard/buy", produces="application/json")
