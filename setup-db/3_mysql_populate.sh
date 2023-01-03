@@ -31,6 +31,12 @@ sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('user', '71049f
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('mcadmin', 'McDonalds', '6814b9dfd1d1191d8ee4e7114f70a0de09c1075438bd4b4c59ef6c743b26f9bb', '1234fries5', NULL, NULL);" #pass = admin
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('Duarte', 'Modesta da Pampulha', 'a8ec9d72a2bf62779f7f4197c11b1696ee685d1811c01a387caf7430813ffa27', 'croquetes1', NULL, NULL);" #pass = maria123
 
+# giftcards
+#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (1, '', NULL, 10)"
+#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (2, '', NULL, 25)"
+#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (3, '', NULL, 50)"
+#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (4, '', NULL, 100)"
+
 # other important commands
 #  -Delete a Database
 #  DROP DATABASE dbname;
