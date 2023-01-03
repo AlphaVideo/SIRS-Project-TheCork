@@ -1,3 +1,8 @@
+sudo -s
+
+#delete database if exists
+mysql -u sirs -psirs -e "DROP DATABASE IF EXISTS thecork;"
+
 #create database
 mysql -u sirs -psirs -e "CREATE DATABASE thecork;"
 
@@ -28,7 +33,7 @@ mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('user', '71049f0dada
 mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('mcadmin', 'McDonalds', '6814b9dfd1d1191d8ee4e7114f70a0de09c1075438bd4b4c59ef6c743b26f9bb', '1234fries5', NULL, NULL);" #pass = admin
 mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('Duarte', 'Modesta da Pampulha', 'a8ec9d72a2bf62779f7f4197c11b1696ee685d1811c01a387caf7430813ffa27', 'croquetes1', NULL, NULL);" #pass = maria123
 
-
+exit
 # other important commands
 #  -Delete a Database
 #  DROP DATABASE dbname;
