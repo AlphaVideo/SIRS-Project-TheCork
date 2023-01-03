@@ -13,7 +13,7 @@ import com.sirs.thecork.db.DebugCommander;
 public class DebugController {
 
 	DebugCommander _commander = null;
-	
+
 	public DebugController() {
 		_commander = new DebugCommander();
 	}
@@ -23,7 +23,7 @@ public class DebugController {
 		return "<h1 id=\"thecork\">TheCork™</h1>"
 				+ "<p>Welcome to TheCork REST API services!</p>";
 	}
-	
+
 	@GetMapping("/demo/{name}")
 	public String getDemo(@PathVariable String name) {
 		return String.format("Hello %s!", name);
@@ -34,13 +34,13 @@ public class DebugController {
 		return _commander.listRestaurant().toString();
 	}
 
-	@GetMapping("/debug/restaurant/add/{name}")
+	@GetMapping(value="/debug/restaurant/add/{name}", produces="application/json")
 	public String addRestaurant(@PathVariable String name) {
-		return _commander.addRestaurant(name) ? "OK" : "NOK";
+		return _commander.addRestaurant(name);
 	}
 
-	@GetMapping("/debug/restaurant/remove/{name}")
+	@GetMapping(value="/debug/restaurant/remove/{name}", produces="application/json")
 	public String removeRestaurant(@PathVariable String name) {
-		return _commander.removeRestaurant(name) ? "OK" : "NOK";
+		return _commander.removeRestaurant(name);
 	}
 }

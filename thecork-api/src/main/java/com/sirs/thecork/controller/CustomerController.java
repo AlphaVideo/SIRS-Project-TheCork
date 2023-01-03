@@ -13,43 +13,38 @@ import com.sirs.thecork.db.CustomerCommander;
 public class CustomerController {
 
 	CustomerCommander _commander = null;
-	
+
 	CustomerController(){
 		_commander = new CustomerCommander();
 	}
 
-	@PostMapping("/customer_login")
+	@PostMapping(value="/login/customer", produces="application/json")
 	public String loginCustomer(@RequestParam("user") String user, @RequestParam("pass") String pass) {
-		return _commander.loginCustomer(user, pass) ? "OK" : "NOK";
+		return _commander.loginCustomer(user, pass);
 	}
 
-	@PostMapping("/reservation")
-	public String reservation(@RequestParam("user") String user, @RequestParam("restarurant") String restarurant, @RequestParam("nPeople") int nPeople, @RequestParam("datetime") String datetime) {
-		return _commander.reservation(user, restarurant, nPeople, datetime) ? "OK" : "NOK";
+	@PostMapping(value="/reservation/create", produces="application/json")
+	public String reservation(@RequestParam("auth_token") String auth_token, @RequestParam("restarurant") String restarurant, @RequestParam("nPeople") int nPeople, @RequestParam("datetime") String datetime) {
+		return _commander.reservation(auth_token, restarurant, nPeople, datetime);
 	}
 
-	@PostMapping("/buy_giftcard")
-	public String buy_giftcard(@RequestParam("user") String user, @RequestParam("value") int value) {
-		return _commander.buy_giftcard(user, value) ? "OK" : "NOK";
+	@PostMapping(value="/giftcard/buy", produces="application/json")
+	public String buy_giftcard(@RequestParam("auth_token") String auth_token, @RequestParam("value") int value) {
+		return _commander.buy_giftcard(auth_token, value);
 	}
 
-	@PostMapping("/redeem_giftcard")
-	public String redeem_giftcard(@RequestParam("user") String user, @RequestParam("id") int id, @RequestParam("nonce") String nonce) {
-		return _commander.redeem_giftcard(user, id, nonce) ? "OK" : "NOK";
+	@PostMapping(value="/giftcard/redeem", produces="application/json")
+	public String redeem_giftcard(@RequestParam("auth_token") String auth_token, @RequestParam("id") int id, @RequestParam("nonce") String nonce) {
+		return _commander.redeem_giftcard(auth_token, id, nonce);
 	}
 
-	@PostMapping("/gift_giftcard")
-	public String gift_giftcard(@RequestParam("user") String user, @RequestParam("target") String target, @RequestParam("id") int id, @RequestParam("nonce") String nonce) {
-		return _commander.gift_giftcard(user, target, id, nonce) ? "OK" : "NOK";
+	@PostMapping(value="/giftcard/give", produces="application/json")
+	public String give_giftcard(@RequestParam("auth_token") String auth_token, @RequestParam("target") String target, @RequestParam("id") int id, @RequestParam("nonce") String nonce) {
+		return _commander.give_giftcard(auth_token, target, id, nonce);
 	}
 
-	@PostMapping("/create_giftcard")
-	public String create_giftcard(@RequestParam("value") int value) {
-		return _commander.create_giftcard(value) ? "OK" : "NOK";
-	}
-
-	@PostMapping("/check_balance")
-	public String check_balance(@RequestParam("user") String user) {
-		return _commander.check_balance(user) ? "OK" : "NOK";
+	@PostMapping(value="/check_balance", produces="application/json")
+	public String check_balance(@RequestParam("auth_token") String auth_token) {
+		return _commander.check_balance(auth_token);
 	}
 }

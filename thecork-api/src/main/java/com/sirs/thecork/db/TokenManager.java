@@ -7,12 +7,14 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+import java.util.concurrent.TimeUnit;
+
 import java.security.SecureRandom;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 public class TokenManager {
-    
+
+    final int TIMOUT = 2;
+
     enum USER_TYPE {
         CUSTOMER,
         STAFF
@@ -26,9 +28,10 @@ public class TokenManager {
         _conn = conn;
 
         if(isStaff)
-            _type = USER_TYPE.CUSTOMER;
+        _type = USER_TYPE.STAFF;
+
         else
-            _type = USER_TYPE.STAFF;
+            _type = USER_TYPE.CUSTOMER;
 	}
 
     /**
@@ -42,30 +45,30 @@ public class TokenManager {
 
         //Generate a secure random number
         SecureRandom nonceGen = new SecureRandom();
-        byte nonceBytes[] = new byte[8]; //Equivalent to 16 hex chars
+        byte nonceBytes[] = new byte[32]; //Equivalent to 64 hex chars
         nonceGen.nextBytes(nonceBytes); // Stores random bytes in nonce byte array
 
         //Convert nonce bytes to hex string to store in DB
         StringBuilder tokenString = new StringBuilder(2*nonceBytes.length);
         for (int i = 0; i < nonceBytes.length; i++) {
             String hex = Integer.toHexString(0xff&nonceBytes[i]);
-            if(hex.length() == 1) 
+            if(hex.length() == 1)
                 tokenString.append('0');
-            
+
             tokenString.append(hex);
         }
 
         //Get current timestamp
-        //Timestamp ts = new Timestamp(System.currentTimeMillis());
+        Timestamp ts = new Timestamp(System.currentTimeMillis()+ TimeUnit.MINUTES.toMillis(TIMOUT));
 
         try {
             if(_type == USER_TYPE.CUSTOMER)
-			    stmt = _conn.prepareStatement("UPDATE client SET auth_token_nonce=?, token_exp_date=? WHERE username=?");
+			    stmt = _conn.prepareStatement("UPDATE client SET auth_token=?, token_exp_time=? WHERE username=?");
             else
-                stmt = _conn.prepareStatement("UPDATE staff SET auth_token_nonce=?, token_exp_date=? WHERE username=?");
+                stmt = _conn.prepareStatement("UPDATE staff SET auth_token=?, token_exp_time=? WHERE username=?");
 
             stmt.setString(1, tokenString.toString());
-            stmt.setTimestamp(2, null, null);
+            stmt.setTimestamp(2, ts);
 			stmt.setString(3,  user);
 			stmt.executeUpdate();
 		} catch (SQLException e) {
@@ -73,7 +76,7 @@ public class TokenManager {
 			e.printStackTrace();
 			return null;
 		}
-		
+
         return tokenString.toString();
     }
 
@@ -87,6 +90,6 @@ public class TokenManager {
     {
         return true;
     }
-    
+
 
 }

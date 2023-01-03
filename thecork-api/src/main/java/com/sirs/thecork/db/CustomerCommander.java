@@ -1,5 +1,6 @@
 package com.sirs.thecork.db;
 
+import java.sql.Timestamp;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -8,6 +9,7 @@ import java.sql.SQLException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.nio.charset.StandardCharsets;
 
 import org.json.JSONArray;
@@ -18,26 +20,26 @@ public class CustomerCommander {
     Connection _connection = null;
     TokenManager _tokenManager = null;
 
-	public CustomerCommander() {
-		_connection = DatabaseConnection.getConnection();
-    _tokenManager = new TokenManager(_connection, false);
+    public CustomerCommander() {
+        _connection = DatabaseConnection.getConnection();
+        _tokenManager = new TokenManager(_connection, false);
 	}
-    
-    public boolean loginCustomer(String user, String pass) {
-		PreparedStatement stmt;
-		ResultSet res = null;
+
+    public String loginCustomer(String user, String pass) {
+        PreparedStatement stmt;
+        ResultSet res = null;
         String password = pass;
-		
-		try {
+
+        try {
             //First we must find if user exists
-			stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ?;");
+            stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ?;");
             stmt.setString(1, user);
-			res = stmt.executeQuery();		
+            res = stmt.executeQuery();
 
             //Check if result set isn't empty
             if(!res.isBeforeFirst()) {
                 //Empty
-                return false;
+                return JsonToolkit.generateStatus("ERROR", "User non-existent").toString();
             }
             else {
                 //Obtain pass salt
@@ -54,20 +56,20 @@ public class CustomerCommander {
             StringBuilder pass_hash = new StringBuilder(2*encodedHash.length);
             for (int i = 0; i < encodedHash.length; i++) {
                 String hex = Integer.toHexString(0xff&encodedHash[i]);
-                if(hex.length() == 1) 
+                if(hex.length() == 1)
                     pass_hash.append('0');
-                
+
                 pass_hash.append(hex);
             }
 
             String dbPassHash = res.getString("pass_hash");
 
-            //Wrong Password 
+            //Wrong Password
             if(!pass_hash.toString().equals(dbPassHash)) {
-                return false;
-            }   
-            
-		} catch (SQLException e) {
+                return JsonToolkit.generateStatus("ERROR", "Wrong user or password").toString();
+            }
+
+        } catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException e) {
@@ -76,25 +78,29 @@ public class CustomerCommander {
 
         //Everything succeeded -> generate new auth token
         String token = _tokenManager.generateToken(user);
-        System.out.println(token);
-        return true;
+
+        return JsonToolkit.generateStatus("OK", "auth_token", token).toString();
 	}
 
-    public boolean reservation(String user, String restaurant, int nPeople, String datetime) {
+    public String reservation(String auth_token, String restaurant, int nPeople, String datetime) {
 		PreparedStatement stmt;
 		ResultSet res = null;
-		
+
+        String user = getUser(auth_token);
+        if (user == null)
+            return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
+
 		try {
             //We can assume the user exists because he already went through the login process
             //First we must find if restaurant exists
 			stmt = _connection.prepareStatement("SELECT * FROM restaurant WHERE name = ?;");
             stmt.setString(1, restaurant);
-			res = stmt.executeQuery();		
+			res = stmt.executeQuery();
 
             //Check if result set isn't empty
             if(!res.isBeforeFirst()) {
                 //Empty
-                return false;
+                return JsonToolkit.generateStatus("ERROR", "Restaurant non-existent").toString();
             }
 
             //Add reservation to database
@@ -104,24 +110,26 @@ public class CustomerCommander {
                 stmt.setString(2, restaurant);
                 stmt.setString(3, datetime);
                 stmt.setInt(4, nPeople);
-                stmt.executeQuery();	
-
+                stmt.executeQuery();
             }
-              
-            
+
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
-		} 
+		}
 
         //Everything succeeded
-        return true;
+        return JsonToolkit.generateStatus("OK").toString();
 	}
-	
-    public boolean buy_giftcard(String user, int value) {
+
+    public String buy_giftcard(String auth_token, int value) {
 		PreparedStatement stmt;
 		ResultSet res = null;
-		
+
+        String user = getUser(auth_token);
+        if (user == null)
+            return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
+
 		try {
             //We can assume the user exists because he already went through the login process
 
@@ -134,21 +142,25 @@ public class CustomerCommander {
 
             //create new giftcard
             create_giftcard(value);
-               
-            
+
+
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
-		} 
+		}
 
         //Everything succeeded
-        return true;
+        return JsonToolkit.generateStatus("ERROR", "Not implemented").toString();
 	}
 
-    public boolean redeem_giftcard(String user, int id, String nonce) {
+    public String redeem_giftcard(String auth_token, int id, String nonce) {
 		PreparedStatement stmt;
 		ResultSet res = null;
-		
+
+        String user = getUser(auth_token);
+        if (user == null)
+            return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
+
 		try {
             //We can assume the user exists because he already went through the login process
             //First we must find if giftcard exists and it belongs to the user
@@ -156,17 +168,17 @@ public class CustomerCommander {
             stmt.setInt(1, id);
             stmt.setString(2, nonce);
             stmt.setString(3, user);
-			res = stmt.executeQuery();		
+			res = stmt.executeQuery();
 
             //Check if result set isn't empty
             if(!res.isBeforeFirst()) {
                 //Empty
-                return false;
+                return JsonToolkit.generateStatus("ERROR", "Giftcard non-existent for given user").toString();
             }
 
             //Redeem giftcard
             else {
-                
+
                 //Remove Giftcard From Database
                 int value = res.getInt("value");
 
@@ -179,7 +191,7 @@ public class CustomerCommander {
                 //Check how much money the user currently has
 			    stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ?;");
                 stmt.setString(1, user);
-                res = stmt.executeQuery();	
+                res = stmt.executeQuery();
 
                 int wallet = res.getInt("wallet");
 
@@ -189,23 +201,27 @@ public class CustomerCommander {
                 stmt = _connection.prepareStatement("Update client SET wallet = ? WHERE username = ?;");
                 stmt.setInt(1, wallet);
                 stmt.setString(2, user);
-                stmt.executeQuery();	
+                stmt.executeQuery();
 
             }
-            
+
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
-		} 
+		}
 
         //Everything succeeded
-        return true;
+        return JsonToolkit.generateStatus("OK").toString();
 	}
 
-    public boolean gift_giftcard(String user, String target, int id, String nonce) {
+    public String give_giftcard(String auth_token, String target, int id, String nonce) {
 		PreparedStatement stmt;
 		ResultSet res = null;
-		
+
+        String user = getUser(auth_token);
+        if (user == null)
+            return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
+
 		try {
             //We can assume the user exists because he already went through the login process
             //First we must find if giftcard exists and it belongs to the user
@@ -213,24 +229,24 @@ public class CustomerCommander {
             stmt.setInt(1, id);
             stmt.setString(2, nonce);
             stmt.setString(3, user);
-			stmt.executeQuery();		
+			res = stmt.executeQuery();
 
             //Check if result set isn't empty
             if(!res.isBeforeFirst()) {
                 //Empty
-                return false;
+                return JsonToolkit.generateStatus("ERROR", "Giftcard non-existent for given user").toString();
             }
 
             else {
                 //Now we must find if target exists
                 stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ?;");
                 stmt.setString(1, target);
-                stmt.executeQuery();		
+                stmt.executeQuery();
 
                 //Check if result set isn't empty
                 if(!res.isBeforeFirst()) {
                     //Empty
-                    return false;
+                    return JsonToolkit.generateStatus("ERROR", "Target user non-existent").toString();
                 }
                 else {
                     //Change Ownership
@@ -239,8 +255,7 @@ public class CustomerCommander {
                     stmt.setInt(2, id);
                     stmt.setString(3, nonce);
                     stmt.executeQuery();
-                }   
-            
+                }
 		    }
         } catch (SQLException e) {
 			// add info to logger
@@ -248,13 +263,13 @@ public class CustomerCommander {
 		}
 
         //Everything succeeded
-        return true;
+        return JsonToolkit.generateStatus("OK").toString();
 	}
 
     public boolean create_giftcard(int value) {
 		PreparedStatement stmt;
 		ResultSet res = null;
-		
+
 		try {
 
             //Generate a secure random number
@@ -266,66 +281,76 @@ public class CustomerCommander {
             StringBuilder tokenString = new StringBuilder(2*nonceBytes.length);
             for (int i = 0; i < nonceBytes.length; i++) {
                 String hex = Integer.toHexString(0xff&nonceBytes[i]);
-                if(hex.length() == 1) 
+                if(hex.length() == 1)
                     tokenString.append('0');
-                
+
                 tokenString.append(hex);
             }
 
 			stmt = _connection.prepareStatement("INSERT INTO giftcard VALUES (0, ?, NULL, ?);");
-            stmt.setString(1, tokenString.toString())
+            stmt.setString(1, tokenString.toString());
             stmt.setInt(2, value);
-			res = stmt.executeQuery();	
- 
-            
+			res = stmt.executeQuery();
+
+
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
-		} 
+		}
 
         //Everything succeeded
         return true;
 	}
 
-    public boolean check_balance(String user) {
+    public String check_balance(String auth_token) {
 		PreparedStatement stmt;
 		ResultSet res = null;
-		
+        int balance;
+
+        String user = getUser(auth_token);
+        if (user == null)
+            return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
+
 		try {
             //We can assume the user exists because he already went through the login process
             //Check Balance
-			stmt = _connection.prepareStatement("SELECT * FROM cluent WHERE username = ?;");
+			stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ?;");
             stmt.setString(1, user);
-			res = stmt.executeQuery();	
+			res = stmt.executeQuery();
 
-            int balance = res.getInt("wallet");
+            balance = res.getInt("wallet");
 
-            //TODO: Return Balance somehow
- 
-            
+            return JsonToolkit.generateStatus("OK", "balance", Integer.toString(balance)).toString();
+
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
-		} 
-
-        //Everything succeeded
-        return true;
-	}
-
-	private JSONArray processResult(ResultSet res) throws SQLException {
-		JSONArray json = new JSONArray();
-		ResultSetMetaData rsmd = res.getMetaData();
-		int numColumns = rsmd.getColumnCount();
-
-		while(res.next()) {
-		  JSONObject obj = new JSONObject();
-
-		  for (int i=1; i<=numColumns; i++) {
-		    String columnName = rsmd.getColumnName(i);
-		    obj.put(columnName, res.getObject(columnName));
-		  }
-		  json.put(obj);
 		}
-		return json;
+        return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 	}
+
+    private String getUser(String auth_token){
+        PreparedStatement stmt;
+        ResultSet res = null;
+        String user;
+        Timestamp exp;
+
+        try {
+            stmt = _connection.prepareStatement("SELECT username,token_exp_time FROM client WHERE auth_token=?;");
+            System.out.println(stmt);
+            stmt.setString(1, auth_token);
+            res = stmt.executeQuery();
+
+            user = res.getString("username");
+            System.out.println(user);
+            exp = res.getTimestamp("token_exp_time");
+            System.out.println(exp);
+        }
+        catch (SQLException e){
+			e.printStackTrace();
+            return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
+		}
+
+        return user;
+    }
 }
