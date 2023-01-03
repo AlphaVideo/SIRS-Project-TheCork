@@ -81,4 +81,45 @@ public class StaffCommander {
 
         return JsonToolkit.generateStatus("OK", "auth_token", token).toString();
 	}
+
+    public String createGiftcard(String auth_token, int value) {
+		PreparedStatement stmt;
+        int count = -1;
+
+        String user = _tokenManager.validateToken(auth_token);
+        if (user == null)
+            return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
+
+		try {
+            //Generate a secure random number
+            SecureRandom nonceGen = new SecureRandom();
+            byte nonceBytes[] = new byte[8]; //Equivalent to 16 hex chars
+            nonceGen.nextBytes(nonceBytes); // Stores random bytes in nonce byte array
+
+            //Convert nonce bytes to hex string to store in DB
+            StringBuilder tokenString = new StringBuilder(2*nonceBytes.length);
+            for (int i = 0; i < nonceBytes.length; i++) {
+                String hex = Integer.toHexString(0xff&nonceBytes[i]);
+                if(hex.length() == 1)
+                    tokenString.append('0');
+
+                tokenString.append(hex);
+            }
+
+			stmt = _connection.prepareStatement("INSERT INTO giftcard VALUES (0, ?, NULL, ?);");
+            stmt.setString(1, tokenString.toString());
+            stmt.setInt(2, value);
+			count = stmt.executeUpdate();
+
+		} catch (SQLException e) {
+			// add info to logger
+			e.printStackTrace();
+		}
+
+        if(count == 1)
+            return JsonToolkit.generateStatus("OK").toString();
+        else
+            return JsonToolkit.generateStatus("ERROR", "Failed to insert new giftcard into DB.").toString();
+	}
+
 }

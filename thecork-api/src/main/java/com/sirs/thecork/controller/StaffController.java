@@ -21,4 +21,9 @@ public class StaffController {
 	public String loginCustomer(@RequestParam("user") String user, @RequestParam("pass") String pass) {
 		return _commander.loginStaff(user, pass);
 	}
+
+    @PostMapping(value="/giftcard/create", produces="application/json")
+	public String createGiftcard(@RequestParam("auth_token") String token, @RequestParam("value") int value) {
+		return _commander.createGiftcard(token, value);
+	}
 }

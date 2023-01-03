@@ -135,7 +135,7 @@ public class CustomerCommander {
 
             //Activate a giftcard
             //TODO: check if sql statement works and return the id and nonce to the customer
-            stmt = _connection.prepareStatement("UPDATE TOP (1) giftcards SET owner = ? WHERE owner = NULL and value = ?;");
+            stmt = _connection.prepareStatement("UPDATE TOP (1) giftcard SET owner = ? WHERE owner = NULL and value = ?;");
             stmt.setString(1, user);
             stmt.setInt(2, value);
             stmt.executeUpdate();
@@ -164,7 +164,7 @@ public class CustomerCommander {
 		try {
             //We can assume the user exists because he already went through the login process
             //First we must find if giftcard exists and it belongs to the user
-			stmt = _connection.prepareStatement("SELECT * FROM giftcards WHERE id = ? and nonce = ? and owner = ?;");
+			stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE id = ? and nonce = ? and owner = ?;");
             stmt.setInt(1, id);
             stmt.setString(2, nonce);
             stmt.setString(3, user);
@@ -182,7 +182,7 @@ public class CustomerCommander {
                 //Remove Giftcard From Database
                 int value = res.getInt("value");
 
-                stmt = _connection.prepareStatement("DELETE FROM giftcards WHERE id = ? and nonce = ? and owner = ?;");
+                stmt = _connection.prepareStatement("DELETE FROM giftcard WHERE id = ? and nonce = ? and owner = ?;");
                 stmt.setInt(1, id);
                 stmt.setString(2, nonce);
                 stmt.setString(3, user);
@@ -225,7 +225,7 @@ public class CustomerCommander {
 		try {
             //We can assume the user exists because he already went through the login process
             //First we must find if giftcard exists and it belongs to the user
-			stmt = _connection.prepareStatement("SELECT * FROM giftcards WHERE id = ? and nonce = ? and owner = ?;");
+			stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE id = ? and nonce = ? and owner = ?;");
             stmt.setInt(1, id);
             stmt.setString(2, nonce);
             stmt.setString(3, user);
