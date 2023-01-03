@@ -86,7 +86,7 @@ public class CustomerCommander {
 		PreparedStatement stmt;
 		ResultSet res = null;
 
-        String user = getUser(auth_token);
+        String user = _tokenManager.validateToken(auth_token);
         if (user == null)
             return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
 
@@ -126,7 +126,7 @@ public class CustomerCommander {
 		PreparedStatement stmt;
 		ResultSet res = null;
 
-        String user = getUser(auth_token);
+        String user = _tokenManager.validateToken(auth_token);
         if (user == null)
             return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
 
@@ -157,7 +157,7 @@ public class CustomerCommander {
 		PreparedStatement stmt;
 		ResultSet res = null;
 
-        String user = getUser(auth_token);
+        String user = _tokenManager.validateToken(auth_token);
         if (user == null)
             return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
 
@@ -218,7 +218,7 @@ public class CustomerCommander {
 		PreparedStatement stmt;
 		ResultSet res = null;
 
-        String user = getUser(auth_token);
+        String user = _tokenManager.validateToken(auth_token);
         if (user == null)
             return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
 
@@ -307,7 +307,7 @@ public class CustomerCommander {
 		ResultSet res = null;
         int balance;
 
-        String user = getUser(auth_token);
+        String user = _tokenManager.validateToken(auth_token);
         if (user == null)
             return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
 
@@ -318,6 +318,14 @@ public class CustomerCommander {
             stmt.setString(1, user);
 			res = stmt.executeQuery();
 
+            //Check if result set isn't empty
+            if(!res.isBeforeFirst()) {
+                //Empty
+                return JsonToolkit.generateStatus("ERROR", "SQL Query returned no results").toString();
+            }
+            else 
+                res.next();
+            
             balance = res.getInt("wallet");
 
             return JsonToolkit.generateStatus("OK", "balance", Integer.toString(balance)).toString();
@@ -329,28 +337,4 @@ public class CustomerCommander {
         return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 	}
 
-    private String getUser(String auth_token){
-        PreparedStatement stmt;
-        ResultSet res = null;
-        String user;
-        Timestamp exp;
-
-        try {
-            stmt = _connection.prepareStatement("SELECT username,token_exp_time FROM client WHERE auth_token=?;");
-            System.out.println(stmt);
-            stmt.setString(1, auth_token);
-            res = stmt.executeQuery();
-
-            user = res.getString("username");
-            System.out.println(user);
-            exp = res.getTimestamp("token_exp_time");
-            System.out.println(exp);
-        }
-        catch (SQLException e){
-			e.printStackTrace();
-            return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
-		}
-
-        return user;
-    }
 }

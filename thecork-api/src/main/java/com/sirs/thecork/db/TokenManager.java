@@ -13,7 +13,7 @@ import java.security.SecureRandom;
 
 public class TokenManager {
 
-    final int TIMOUT = 2;
+    final int TIMEOUT = 2;
 
     enum USER_TYPE {
         CUSTOMER,
@@ -58,8 +58,8 @@ public class TokenManager {
             tokenString.append(hex);
         }
 
-        //Get current timestamp
-        Timestamp ts = new Timestamp(System.currentTimeMillis()+ TimeUnit.MINUTES.toMillis(TIMOUT));
+        //Get current timestamp with added Timeout period
+        Timestamp ts = new Timestamp(System.currentTimeMillis()+ TimeUnit.MINUTES.toMillis(TIMEOUT));
 
         try {
             if(_type == USER_TYPE.CUSTOMER)
@@ -81,15 +81,43 @@ public class TokenManager {
     }
 
     /**
-     * Checks if given token is still valid for given user
+     * Obtains user for given token
      * @param tk
      * @param user
-     * @return true if valid token
+     * @return user if valid token
      */
-    public boolean validateToken(String user, String tk)
+    public String validateToken(String tk)
     {
-        return true;
+        PreparedStatement stmt;
+        ResultSet res = null;
+        String user = null;
+        Timestamp exp;
+
+        try {
+            stmt = _conn.prepareStatement("SELECT username, token_exp_time FROM client WHERE auth_token=?;");
+            System.out.println(stmt);
+            stmt.setString(1, tk);
+            res = stmt.executeQuery();
+
+            //Check if result set isn't empty
+            if(!res.isBeforeFirst()) {
+                //Empty
+                return JsonToolkit.generateStatus("ERROR", "User non-existent").toString();
+            }
+            else {
+                res.next();
+            }
+            
+            user = res.getString("username");
+            System.out.println(user);
+            exp = res.getTimestamp("token_exp_time");
+            System.out.println(exp);
+        }
+        catch (SQLException e){
+			e.printStackTrace();
+            return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
+		}
+
+        return user;
     }
-
-
 }
