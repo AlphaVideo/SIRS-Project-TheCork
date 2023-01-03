@@ -16,7 +16,6 @@ sslkeylog.set_keylog('sslkeys_{}.log'.format(datetime.now().strftime("%Y-%m-%d_%
 # Variables and such
 #
 auth_token = None
-username = ""
 operation = 0
 
 #
@@ -60,15 +59,13 @@ def login():
     print_http_response(resp)
 
 def is_valid_date(year, month, day):
-    yearInt = int(year)
     day_count_for_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-    if yearInt%4==0 and (yearInt%100 != 0 or yearInt%400==0):
+    if year%4==0 and (year%100 != 0 or year%400==0):
         day_count_for_month[2] = 29
     return (1 <= month <= 12 and 1 <= day <= day_count_for_month[month])
     
 
 def reservation():    
-
     while True:
         restaurant = input("Please insert the name of the restaurant where you would like to book a reservation.\n> ")
         if len(restaurant) > 32:
@@ -90,18 +87,18 @@ def reservation():
         month = date_parse[1]
         day = date_parse[2]
 
-        if not is_valid_date(year, month, day):
+        if not is_valid_date(int(year), int(month), int(day)):
             print("Date inserted isn't valid.")
             continue
 
-        time = input("Please insert the date you would like to book for. (Please use the format HH:MM)\n> ")
+        time = input("Please insert the time you would like to book for. (Please use the format HH:MM)\n> ")
         time_parse = time.split(':')
-        if len(date_parse != 2):
+        if len(time_parse) != 2:
             print("Time inserted isn't valid.")
             continue
 
-        hour = time_parse[0]
-        minute = time_parse[1]
+        hour = int(time_parse[0])
+        minute = int(time_parse[1])
 
         if hour > 23 or hour < 0 or minute > 59 or minute < 0:
             print("Time inserted isn't valid.")
@@ -111,7 +108,7 @@ def reservation():
 
     datetime = date + " " + time + ":00"
 
-    resp = requests.post("https://192.168.1.3:8443/reservation/make", verify="root-ca.crt", params={"user": username, "restaurant": restaurant, "nPeople": nPeople, "datetime": datetime} )
+    resp = requests.post("https://192.168.1.3:8443/reservation/create", verify="root-ca.crt", params={"auth_token": auth_token, "restaurant": restaurant, "nPeople": nPeople, "datetime": datetime} )
 
     print_http_response(resp)
 
@@ -132,7 +129,7 @@ def buy_giftcard():
             else:
                 value_not_selected = False
 
-    resp = requests.post("https://192.168.1.3:8443/buy_giftcard", verify="root-ca.crt", params={"user": username, "value": value} )
+    resp = requests.post("https://192.168.1.3:8443/buy_giftcard", verify="root-ca.crt", params={"auth_token": auth_token, "value": value} )
 
     print_http_response(resp)
     
@@ -151,7 +148,7 @@ def redeem_giftcard():
             
         break
 
-    resp = requests.post("https://192.168.1.3:8443/giftcard/redeem", verify="root-ca.crt", params={"user": username, "id": giftcard_id, "nonce": giftcard_nonce} )
+    resp = requests.post("https://192.168.1.3:8443/giftcard/redeem", verify="root-ca.crt", params={"auth_token": auth_token, "id": giftcard_id, "nonce": giftcard_nonce} )
 
     print_http_response(resp)
 
@@ -175,7 +172,7 @@ def gift_giftcard():
             
         break
 
-    resp = requests.post("https://192.168.1.3:8443/giftcard/give", verify="root-ca.crt", params={"user": username, "target": target, "id": giftcard_id, "nonce": giftcard_nonce} )
+    resp = requests.post("https://192.168.1.3:8443/giftcard/give", verify="root-ca.crt", params={"auth_token": auth_token, "target": target, "id": giftcard_id, "nonce": giftcard_nonce} )
 
     print_http_response(resp)
 
