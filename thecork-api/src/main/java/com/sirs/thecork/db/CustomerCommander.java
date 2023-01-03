@@ -268,7 +268,6 @@ public class CustomerCommander {
 
     public boolean create_giftcard(int value) {
 		PreparedStatement stmt;
-		ResultSet res = null;
 
 		try {
 
@@ -290,7 +289,7 @@ public class CustomerCommander {
 			stmt = _connection.prepareStatement("INSERT INTO giftcard VALUES (0, ?, NULL, ?);");
             stmt.setString(1, tokenString.toString());
             stmt.setInt(2, value);
-			res = stmt.executeUpdate();
+			stmt.executeUpdate();
 
 
 		} catch (SQLException e) {
