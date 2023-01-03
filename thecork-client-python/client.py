@@ -29,11 +29,11 @@ class AppMode(Enum):
 def print_http_response(resp):
     jsonObj = json.loads(resp.text)
     print(json.dumps(jsonObj, indent=2))
+    print()
 
 def connection_test():
     resp = requests.get("https://192.168.1.3:8443", verify="root-ca.crt")
     print_http_response(resp)
-
 
 def login():
     print("Logging in as " + ("customer." if mode == AppMode.CUSTOMER else "staff."))
@@ -57,10 +57,15 @@ def login():
         resp = requests.post("https://192.168.1.3:8443/login/staff", verify="root-ca.crt", params={"user": username, "pass": password} )
 
     data = resp.json()
+
+    token = None
+    if data["status"] == "OK":
+        token = data["auth_token"]
+
     print_http_response(resp)
     
     #Change global token
-    return data["auth_token"]
+    return token
 
 def is_valid_date(year, month, day):
     day_count_for_month = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
@@ -202,7 +207,6 @@ def create_giftcard():
     print_http_response(resp)
 
 def check_balance():
-    print(auth_token)
     resp = requests.post("https://192.168.1.3:8443/check_balance", verify="root-ca.crt", params={"auth_token": auth_token} )
 
     print_http_response(resp)
