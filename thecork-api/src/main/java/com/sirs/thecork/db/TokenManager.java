@@ -92,34 +92,48 @@ public class TokenManager {
         ResultSet res = null;
         String user = null;
         Timestamp exp;
+        Timestamp now = new Timestamp(System.currentTimeMillis());
 
         try {
             if(_type == USER_TYPE.CUSTOMER)
                 stmt = _conn.prepareStatement("SELECT username, token_exp_time FROM client WHERE auth_token=?;");
             else
                 stmt = _conn.prepareStatement("SELECT username, token_exp_time FROM staff WHERE auth_token=?;");
-            System.out.println(stmt);
             stmt.setString(1, tk);
             res = stmt.executeQuery();
 
             //Check if result set isn't empty
             if(!res.isBeforeFirst()) {
                 //Empty
-                return JsonToolkit.generateStatus("ERROR", "User non-existent").toString();
+                return null;
             }
             else {
                 res.next();
             }
 
             user = res.getString("username");
-            System.out.println(user);
             exp = res.getTimestamp("token_exp_time");
-            System.out.println(exp);
         }
         catch (SQLException e){
 			e.printStackTrace();
-            return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
+            return null;
 		}
+
+        if (now.after(exp)){
+            try {
+                if(_type == USER_TYPE.CUSTOMER)
+                    stmt = _conn.prepareStatement("UPDATE client SET auth_token=NULL, token_exp_time=NULL WHERE auth_token=?;");
+                else
+                    stmt = _conn.prepareStatement("UPDATE staff SET auth_token=NULL, token_exp_time=NULL WHERE auth_token=?;");
+
+                stmt.setString(1, tk);
+                stmt.executeUpdate();
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+            }
+            return null;
+        }
 
         return user;
     }

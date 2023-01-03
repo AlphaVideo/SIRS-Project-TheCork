@@ -322,9 +322,9 @@ public class CustomerCommander {
                 //Empty
                 return JsonToolkit.generateStatus("ERROR", "SQL Query returned no results").toString();
             }
-            else 
+            else
                 res.next();
-            
+
             balance = res.getInt("wallet");
 
             return JsonToolkit.generateStatus("OK", "balance", Integer.toString(balance)).toString();
