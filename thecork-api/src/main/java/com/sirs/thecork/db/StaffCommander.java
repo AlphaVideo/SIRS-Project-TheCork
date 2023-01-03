@@ -16,7 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class StaffCommander {
-    
+
     Connection _connection = null;
     TokenManager _tokenManager = null;
 
@@ -39,7 +39,7 @@ public class StaffCommander {
             //Check if result set isn't empty
             if(!res.isBeforeFirst()) {
                 //Empty
-                return JsonToolkit.generateStatus("ERROR", "User non-existent").toString();
+                return JsonToolkit.generateStatus("ERROR", "Wrong user or password").toString();
             }
             else {
                 //Obtain pass salt
@@ -93,7 +93,7 @@ public class StaffCommander {
 		try {
             //Generate a secure random number
             SecureRandom nonceGen = new SecureRandom();
-            byte nonceBytes[] = new byte[8]; //Equivalent to 16 hex chars
+            byte nonceBytes[] = new byte[32]; //Equivalent to 64 hex chars
             nonceGen.nextBytes(nonceBytes); // Stores random bytes in nonce byte array
 
             //Convert nonce bytes to hex string to store in DB

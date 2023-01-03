@@ -39,7 +39,7 @@ public class CustomerCommander {
             //Check if result set isn't empty
             if(!res.isBeforeFirst()) {
                 //Empty
-                return JsonToolkit.generateStatus("ERROR", "User non-existent").toString();
+                return JsonToolkit.generateStatus("ERROR", "Wrong user or password").toString();
             }
             else {
                 //Obtain pass salt
@@ -69,11 +69,9 @@ public class CustomerCommander {
                 return JsonToolkit.generateStatus("ERROR", "Wrong user or password").toString();
             }
 
-        } catch (SQLException e) {
-			// add info to logger
-			e.printStackTrace();
-		} catch (NoSuchAlgorithmException e) {
+        } catch (SQLException | NoSuchAlgorithmException e) {
             e.printStackTrace();
+            return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
         }
 
         //Everything succeeded -> generate new auth token
@@ -116,6 +114,7 @@ public class CustomerCommander {
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
+            return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 		}
 
         //Everything succeeded
@@ -147,6 +146,7 @@ public class CustomerCommander {
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
+            return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 		}
 
         //Everything succeeded
@@ -164,50 +164,29 @@ public class CustomerCommander {
 		try {
             //We can assume the user exists because he already went through the login process
             //First we must find if giftcard exists and it belongs to the user
-			stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE id = ? and nonce = ? and owner = ?;");
+			stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE id = ?;");
             stmt.setInt(1, id);
-            stmt.setString(2, nonce);
-            stmt.setString(3, user);
 			res = stmt.executeQuery();
 
-            //Check if result set isn't empty
-            if(!res.isBeforeFirst()) {
-                //Empty
-                return JsonToolkit.generateStatus("ERROR", "Giftcard non-existent for given user").toString();
-            }
+            String check = checkGiftCard(res, user, nonce);
+            if (check != null)
+                return check;
 
-            //Redeem giftcard
-            else {
+            int value = res.getInt("value");
 
-                //Remove Giftcard From Database
-                int value = res.getInt("value");
+            stmt = _connection.prepareStatement("DELETE FROM giftcard WHERE id = ?;");
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
 
-                stmt = _connection.prepareStatement("DELETE FROM giftcard WHERE id = ? and nonce = ? and owner = ?;");
-                stmt.setInt(1, id);
-                stmt.setString(2, nonce);
-                stmt.setString(3, user);
-                stmt.executeUpdate();
-
-                //Check how much money the user currently has
-			    stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ?;");
-                stmt.setString(1, user);
-                res = stmt.executeQuery();
-
-                int wallet = res.getInt("wallet");
-
-                //Add the value of the Giftcard
-                wallet += value;
-
-                stmt = _connection.prepareStatement("Update client SET wallet = ? WHERE username = ?;");
-                stmt.setInt(1, wallet);
-                stmt.setString(2, user);
-                stmt.executeUpdate();
-
-            }
+            stmt = _connection.prepareStatement("UPDATE client SET wallet = wallet + ? WHERE username = ?;");
+            stmt.setInt(1, value);
+            stmt.setString(2, user);
+            stmt.executeUpdate();
 
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
+            return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 		}
 
         //Everything succeeded
@@ -225,55 +204,47 @@ public class CustomerCommander {
 		try {
             //We can assume the user exists because he already went through the login process
             //First we must find if giftcard exists and it belongs to the user
-			stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE id = ? and nonce = ? and owner = ?;");
+			stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE id = ?;");
             stmt.setInt(1, id);
-            stmt.setString(2, nonce);
-            stmt.setString(3, user);
 			res = stmt.executeQuery();
+
+            String check = checkGiftCard(res, user, nonce);
+            if (check != null)
+                return check;
+
+            //Now we must find if target exists
+            stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ?;");
+            stmt.setString(1, target);
+            stmt.executeQuery();
 
             //Check if result set isn't empty
             if(!res.isBeforeFirst()) {
                 //Empty
-                return JsonToolkit.generateStatus("ERROR", "Giftcard non-existent for given user").toString();
+                return JsonToolkit.generateStatus("ERROR", "Target user non-existent").toString();
             }
+            //Change Ownership
+            stmt = _connection.prepareStatement("UPDATE giftcard SET owner = ? WHERE id = ?;");
+            stmt.setString(1, target);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
 
-            else {
-                //Now we must find if target exists
-                stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ?;");
-                stmt.setString(1, target);
-                stmt.executeQuery();
-
-                //Check if result set isn't empty
-                if(!res.isBeforeFirst()) {
-                    //Empty
-                    return JsonToolkit.generateStatus("ERROR", "Target user non-existent").toString();
-                }
-                else {
-                    //Change Ownership
-                    stmt = _connection.prepareStatement("Update giftcard SET owner = ? WHERE id = ? and nonce = ?;");
-                    stmt.setString(1, target);
-                    stmt.setInt(2, id);
-                    stmt.setString(3, nonce);
-                    stmt.executeUpdate();
-                }
-		    }
         } catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
+            return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 		}
 
         //Everything succeeded
         return JsonToolkit.generateStatus("OK").toString();
 	}
 
-    public boolean create_giftcard(int value) {
+    public String create_giftcard(int value) {
 		PreparedStatement stmt;
 
 		try {
-
             //Generate a secure random number
             SecureRandom nonceGen = new SecureRandom();
-            byte nonceBytes[] = new byte[8]; //Equivalent to 16 hex chars
+            byte nonceBytes[] = new byte[32]; //Equivalent to 64 hex chars
             nonceGen.nextBytes(nonceBytes); // Stores random bytes in nonce byte array
 
             //Convert nonce bytes to hex string to store in DB
@@ -295,10 +266,11 @@ public class CustomerCommander {
 		} catch (SQLException e) {
 			// add info to logger
 			e.printStackTrace();
+            return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 		}
 
         //Everything succeeded
-        return true;
+        return JsonToolkit.generateStatus("OK").toString();
 	}
 
     public String check_balance(String auth_token) {
@@ -336,4 +308,16 @@ public class CustomerCommander {
         return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 	}
 
+    private String checkGiftCard(ResultSet res, String owner, String nonce) throws SQLException{
+        if(!res.isBeforeFirst())
+            return JsonToolkit.generateStatus("ERROR", "Giftcard non-existent").toString();
+
+        res.next();
+        if (res.getObject("owner") != owner)
+            return JsonToolkit.generateStatus("ERROR", "Not the owner").toString();
+        if (res.getObject("nonce") != nonce)
+            return JsonToolkit.generateStatus("ERROR", "Invalid nonce").toString();
+
+        return null;
+    }
 }

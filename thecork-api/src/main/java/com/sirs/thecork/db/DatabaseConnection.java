@@ -18,9 +18,7 @@ public class DatabaseConnection implements AutoCloseable {
 	        _conn = DriverManager.getConnection (url,"sirs","sirs");
 	        // add info to logger
 	    }
-	    catch (ClassNotFoundException | SQLException e)
-	    {
-	    	// add info to logger
+	    catch (ClassNotFoundException | SQLException e){
 	        e.printStackTrace();
         }
 	}
