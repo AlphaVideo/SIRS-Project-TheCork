@@ -160,7 +160,7 @@ def redeem_giftcard():
 
         giftcard_nonce = input("Please insert the giftcard code.\n> ")
         if len(giftcard_nonce) != 64:
-            print("Giftcard code must be 64 numbers/letters long.")
+            print("Giftcard code must be 64 characters long.")
             continue
             
         break
@@ -185,11 +185,12 @@ def gift_giftcard():
             continue
 
         giftcard_nonce = input("Please insert the giftcard code.\n> ")
-        if len(giftcard_nonce) != 316:
-            print("Giftcard code must be 16 characters long.")
+        if len(giftcard_nonce) != 64:
+            print("Giftcard code must be 64 characters long.")
             continue
             
         break
+    print(target)
 
     resp = requests.post("https://192.168.1.3:8443/giftcard/give", verify="root-ca.crt", params={"auth_token": auth_token, "target": target, "id": giftcard_id, "nonce": giftcard_nonce} )
 

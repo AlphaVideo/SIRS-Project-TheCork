@@ -238,7 +238,7 @@ public class CustomerCommander {
             //Now we must find if target exists
             stmt = _connection.prepareStatement("SELECT * FROM client WHERE username = ?;");
             stmt.setString(1, target);
-            stmt.executeQuery();
+            res = stmt.executeQuery();
 
             //Check if result set isn't empty
             if(!res.isBeforeFirst()) {
