@@ -6,10 +6,10 @@ sudo mysql -u sirs -psirs -e "CREATE DATABASE thecork;"
 
 # table creation
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE restaurant(name VARCHAR(32) NOT NULL, PRIMARY KEY(name));"
-sudo mysql -u sirs -psirs thecork -e "CREATE TABLE client(username VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, wallet INT NOT NULL, auth_token CHAR(64),token_exp_time TIMESTAMP, PRIMARY KEY(username));"
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE client(username VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, wallet INT NOT NULL, auth_token CHAR(32),token_exp_time TIMESTAMP, PRIMARY KEY(username));"
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE reservation(clientUsername VARCHAR(32) NOT NULL, restaurantName VARCHAR(32) NOT NULL, time DATETIME NOT NULL, nPeople INT NOT NULL, PRIMARY KEY(clientUsername,restaurantName,time), FOREIGN KEY (clientUsername) REFERENCES client(username), FOREIGN KEY (restaurantName) REFERENCES restaurant(name));"
-sudo mysql -u sirs -psirs thecork -e "CREATE TABLE staff(username VARCHAR(32) NOT NULL, restaurantName VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, auth_token CHAR(64),token_exp_time TIMESTAMP, PRIMARY KEY(username), FOREIGN KEY(restaurantName) REFERENCES restaurant(name));"
-sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard(id INT UNSIGNED UNIQUE AUTO_INCREMENT NOT NULL, nonce CHAR(64) NOT NULL, owner VARCHAR(32), value INT NOT NULL, PRIMARY KEY(id), FOREIGN KEY (owner) REFERENCES client(username));"
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE staff(username VARCHAR(32) NOT NULL, restaurantName VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, auth_token CHAR(32),token_exp_time TIMESTAMP, PRIMARY KEY(username), FOREIGN KEY(restaurantName) REFERENCES restaurant(name));"
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard(id INT UNSIGNED UNIQUE AUTO_INCREMENT NOT NULL, nonce CHAR(32) NOT NULL, owner VARCHAR(32), value INT NOT NULL, PRIMARY KEY(id), FOREIGN KEY (owner) REFERENCES client(username));"
 
 #
 # populate tables
@@ -32,10 +32,10 @@ sudo mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('mcadmin', 'McDo
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('Duarte', 'Modesta da Pampulha', 'a8ec9d72a2bf62779f7f4197c11b1696ee685d1811c01a387caf7430813ffa27', 'croquetes1', NULL, NULL);" #pass = maria123
 
 # giftcards
-#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (1, '', NULL, 10)"
-#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (2, '', NULL, 25)"
-#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (3, '', NULL, 50)"
-#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (4, '', NULL, 100)"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '0748d697590086e39bbde2ec9300949542b29f70dcfa78f82bc158de4bf43759', NULL, 10)"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '1a88bd55bf5d333996369efd27aebe20090ee066e4024bc52c1caa582babea34', NULL, 25)"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'cb33ba6f7b097bebf4d2ebf6430c2841433dbcf241ea21cbe56916dbb8486bf3', NULL, 50)"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'd7d5f80f1c73091c1a108e64f24514a5201af17566ae6fb0aa181b56e394cbdf', NULL, 100)"
 
 # other important commands
 #  -Delete a Database

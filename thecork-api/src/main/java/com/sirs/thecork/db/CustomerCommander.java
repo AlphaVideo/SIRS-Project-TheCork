@@ -1,19 +1,18 @@
 package com.sirs.thecork.db;
 
-import java.sql.Timestamp;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
+
+import com.sirs.thecork.common.JsonToolkit;
+import com.sirs.thecork.common.TokenManager;
 
 public class CustomerCommander {
 
@@ -267,7 +266,7 @@ public class CustomerCommander {
 		try {
             //Generate a secure random number
             SecureRandom nonceGen = new SecureRandom();
-            byte nonceBytes[] = new byte[32]; //Equivalent to 64 hex chars
+            byte nonceBytes[] = new byte[16]; //Equivalent to 32 hex chars
             nonceGen.nextBytes(nonceBytes); // Stores random bytes in nonce byte array
 
             //Convert nonce bytes to hex string to store in DB
