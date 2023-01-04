@@ -32,10 +32,10 @@ sudo mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('mcadmin', 'McDo
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('Duarte', 'Modesta da Pampulha', 'a8ec9d72a2bf62779f7f4197c11b1696ee685d1811c01a387caf7430813ffa27', 'croquetes1', NULL, NULL);" #pass = maria123
 
 # giftcards
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '0748d697590086e39bbde2ec9300949542b29f70dcfa78f82bc158de4bf43759', NULL, 10)"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '1a88bd55bf5d333996369efd27aebe20090ee066e4024bc52c1caa582babea34', NULL, 25)"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'cb33ba6f7b097bebf4d2ebf6430c2841433dbcf241ea21cbe56916dbb8486bf3', NULL, 50)"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'd7d5f80f1c73091c1a108e64f24514a5201af17566ae6fb0aa181b56e394cbdf', NULL, 100)"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '0748d697590086e39bbde2ec93009495', NULL, 10)"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '1a88bd55bf5d333996369efd27aebe20', NULL, 25)"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'cb33ba6f7b097bebf4d2ebf6430c2841', NULL, 50)"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'd7d5f80f1c73091c1a108e64f24514a5', NULL, 100)"
 
 # other important commands
 #  -Delete a Database

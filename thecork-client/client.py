@@ -171,8 +171,8 @@ def redeem_giftcard():
             continue
 
         giftcard_nonce = input("Please insert the giftcard code.\n> ")
-        if len(giftcard_nonce) != 64:
-            print("Giftcard code must be 64 characters long.")
+        if len(giftcard_nonce) != 32:
+            print("Giftcard code must be 32 characters long.")
             continue
         
             
@@ -202,8 +202,8 @@ def gift_giftcard():
             continue
 
         giftcard_nonce = input("Please insert the giftcard code.\n> ")
-        if len(giftcard_nonce) != 64:
-            print("Giftcard code must be 64 characters long.")
+        if len(giftcard_nonce) != 32:
+            print("Giftcard code must be 32 characters long.")
             continue
             
         break
