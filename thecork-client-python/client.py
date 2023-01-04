@@ -158,9 +158,9 @@ def redeem_giftcard():
             print("Giftcard id must be a positive integer.")
             continue
 
-        giftcard_nonce = int(input("Please insert the giftcard code.\n> "))
-        if len(giftcard_nonce) != 16:
-            print("Giftcard code must be 16 numbers long.")
+        giftcard_nonce = input("Please insert the giftcard code.\n> ")
+        if len(giftcard_nonce) != 64:
+            print("Giftcard code must be 64 numbers/letters long.")
             continue
             
         break
