@@ -79,15 +79,19 @@ def is_valid_date(year, month, day):
     return (1 <= month <= 12 and 1 <= day <= day_count_for_month[month])
     
 
-def reservation():    
+def reservation():
     while True:
         restaurant = input("Please insert the name of the restaurant where you would like to book a reservation.\n> ")
         if len(restaurant) > 32:
             print("Restaurant name cannot be more than 32 characters.")
             continue
 
-        nPeople = int(input("Please insert the number of people you would like to book for.\n> "))
-        if nPeople < 1:
+        try:
+            nPeople = int(input("Please insert the number of people you would like to book for.\n> "))
+            if nPeople < 1:
+                print("Number of people must be a positive number.")
+                continue
+        except ValueError:
             print("Number of people must be a positive number.")
             continue
 
@@ -157,8 +161,12 @@ def buy_giftcard():
 def redeem_giftcard():
 
     while True:
-        giftcard_id = int(input("Please insert the giftcard id.\n> "))
-        if giftcard_id < 1:
+        try:
+            giftcard_id = int(input("Please insert the giftcard id.\n> "))
+            if giftcard_id < 1:
+                print("Giftcard id must be a positive integer.")
+                continue
+        except ValueError:
             print("Giftcard id must be a positive integer.")
             continue
 
@@ -166,6 +174,7 @@ def redeem_giftcard():
         if len(giftcard_nonce) != 64:
             print("Giftcard code must be 64 characters long.")
             continue
+        
             
         break
 
@@ -183,8 +192,12 @@ def gift_giftcard():
             print("Username cannot be more than 32 characters.")
             continue
 
-        giftcard_id = int(input("Please insert the giftcard id.\n> "))
-        if giftcard_id < 1:
+        try:
+            giftcard_id = int(input("Please insert the giftcard id.\n> "))
+            if giftcard_id < 1:
+                print("Giftcard id must be a positive integer.")
+                continue
+        except ValueError:
             print("Giftcard id must be a positive integer.")
             continue
 
