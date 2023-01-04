@@ -132,9 +132,8 @@ public class CustomerCommander {
 		try {
 
             //Find if there is an eligible gift card
-            stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE value = ? and owner = ?;");
+            stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE value = ? and owner is NULL LIMIT 1;");
             stmt.setInt(1, value);
-            stmt.setString(2, user);
             res = stmt.executeQuery();
 
             //Check if result set isn't empty
