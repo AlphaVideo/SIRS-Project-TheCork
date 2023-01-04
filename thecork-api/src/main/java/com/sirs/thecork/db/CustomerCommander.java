@@ -336,9 +336,9 @@ public class CustomerCommander {
             return JsonToolkit.generateStatus("ERROR", "Giftcard non-existent").toString();
 
         res.next();
-        if (res.getObject("owner") != owner)
+        if (!res.getObject("owner").equals(owner))
             return JsonToolkit.generateStatus("ERROR", "Not the owner").toString();
-        if (res.getObject("nonce") != nonce)
+        if (!res.getObject("nonce").equals(nonce))
             return JsonToolkit.generateStatus("ERROR", "Invalid nonce").toString();
 
         return null;
