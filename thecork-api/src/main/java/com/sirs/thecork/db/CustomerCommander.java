@@ -129,9 +129,19 @@ public class CustomerCommander {
         String user = _tokenManager.validateToken(auth_token);
         if (user == null)
             return JsonToolkit.generateStatus("ERROR", "INVALID_AUTH_TOKEN").toString();
-
 		try {
-            //We can assume the user exists because he already went through the login process
+
+            //Find if there is an eligible gift card
+            stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE value = ? and owner = ?;");
+            stmt.setInt(1, value);
+            stmt.setString(2, user);
+            res = stmt.executeQuery();
+
+            //Check if result set isn't empty
+            if(!res.isBeforeFirst()) {
+                //Empty
+                return JsonToolkit.generateStatus("ERROR", "No available gift card for the given value.").toString();
+            }
 
             //Activate a giftcard - first giftcard with the value wanted that has no owner
             stmt = _connection.prepareStatement("UPDATE giftcard SET owner = ? WHERE value = ? and owner is NULL LIMIT 1;");
@@ -139,8 +149,25 @@ public class CustomerCommander {
             stmt.setInt(2, value);
             count = stmt.executeUpdate();
 
-            //create new giftcard
-            create_giftcard(value);
+            //If update was successful
+            if(count == 1) {
+
+                //Restock DB
+                create_giftcard(value);
+
+                //Obtain purchased gift card's information for user
+                res.next();
+                JSONObject json = new JSONObject();
+                json.put("status", "OK");
+                json.put("value", res.getInt("value"));
+                json.put("card_id", res.getInt("id"));
+                json.put("card_code", res.getString("nonce"));
+
+                return json.toString();
+            }
+            else {
+                return JsonToolkit.generateStatus("ERROR", "Couldn't purchase giftcard").toString();
+            }
 
 
 		} catch (SQLException e) {
@@ -148,33 +175,6 @@ public class CustomerCommander {
 			e.printStackTrace();
             return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 		}
-
-        //Everything succeeded
-        if(count == 1) {
-            try {
-                //Get the updated card's info
-                stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE value = ? and owner = ?;");
-                stmt.setInt(1, value);
-                stmt.setString(2, user);
-                res = stmt.executeQuery();
-
-                res.next();
-                JSONObject json = new JSONObject();
-                json.put("status", "OK");
-                json.put("value", value);
-                json.put("card_id", value);
-                json.put("card_code", value);
-
-                return json.toString();
-
-            } catch (SQLException e) {
-                // add info to logger
-                e.printStackTrace();
-                return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
-            }
-        }
-        else
-            return JsonToolkit.generateStatus("ERROR", "Couldn't purchase giftcard").toString();
 	}
 
     public String redeem_giftcard(String auth_token, int id, String nonce) {
