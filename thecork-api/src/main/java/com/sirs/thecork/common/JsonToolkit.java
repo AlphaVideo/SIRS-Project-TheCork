@@ -1,4 +1,4 @@
-package com.sirs.thecork.db;
+package com.sirs.thecork.common;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

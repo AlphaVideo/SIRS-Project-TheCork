@@ -6,10 +6,10 @@ sudo mysql -u sirs -psirs -e "CREATE DATABASE thecork;"
 
 # table creation
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE restaurant(name VARCHAR(32) NOT NULL, PRIMARY KEY(name));"
-sudo mysql -u sirs -psirs thecork -e "CREATE TABLE client(username VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, wallet INT NOT NULL, auth_token CHAR(64),token_exp_time TIMESTAMP, PRIMARY KEY(username));"
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE client(username VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, wallet INT NOT NULL, auth_token CHAR(32),token_exp_time TIMESTAMP, PRIMARY KEY(username));"
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE reservation(clientUsername VARCHAR(32) NOT NULL, restaurantName VARCHAR(32) NOT NULL, time DATETIME NOT NULL, nPeople INT NOT NULL, PRIMARY KEY(clientUsername,restaurantName,time), FOREIGN KEY (clientUsername) REFERENCES client(username), FOREIGN KEY (restaurantName) REFERENCES restaurant(name));"
-sudo mysql -u sirs -psirs thecork -e "CREATE TABLE staff(username VARCHAR(32) NOT NULL, restaurantName VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, auth_token CHAR(64),token_exp_time TIMESTAMP, PRIMARY KEY(username), FOREIGN KEY(restaurantName) REFERENCES restaurant(name));"
-sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard(id INT UNSIGNED UNIQUE AUTO_INCREMENT NOT NULL, nonce CHAR(64) NOT NULL, owner VARCHAR(32), value INT NOT NULL, PRIMARY KEY(id), FOREIGN KEY (owner) REFERENCES client(username));"
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE staff(username VARCHAR(32) NOT NULL, restaurantName VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, auth_token CHAR(32),token_exp_time TIMESTAMP, PRIMARY KEY(username), FOREIGN KEY(restaurantName) REFERENCES restaurant(name));"
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard(id INT UNSIGNED UNIQUE AUTO_INCREMENT NOT NULL, nonce CHAR(32) NOT NULL, owner VARCHAR(32), value INT NOT NULL, PRIMARY KEY(id), FOREIGN KEY (owner) REFERENCES client(username));"
 
 #
 # populate tables
