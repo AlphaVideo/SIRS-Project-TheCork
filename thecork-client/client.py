@@ -37,33 +37,37 @@ def connection_test():
     print_http_response(resp)
 
 def login():
-    print("Logging in as " + ("customer." if mode == AppMode.CUSTOMER else "staff."))
-
     while True:
-        username = input("Please insert username.\n> ")
-        if len(username) > 32:
-            print("Username cannot be more than 32 characters.")
-            continue
+        print("Logging in as " + ("customer." if mode == AppMode.CUSTOMER else "staff."))
 
-        password = input("Please insert password.\n> ")
-        if len(password) > 32:
-            print("Password cannot be more than 32 characters.")
-            continue
+        while True:
+            username = input("Please insert username.\n> ")
+            if len(username) > 32:
+                print("Username cannot be more than 32 characters.")
+                continue
+
+            password = input("Please insert password.\n> ")
+            if len(password) > 32:
+                print("Password cannot be more than 32 characters.")
+                continue
+            
+            break
         
-        break
-    
-    if mode == AppMode.CUSTOMER:
-        resp = requests.post("https://192.168.1.3:8443/login/customer", verify="root-ca.crt", params={"user": username, "pass": password} )
-    else:
-        resp = requests.post("https://192.168.1.3:8443/login/staff", verify="root-ca.crt", params={"user": username, "pass": password} )
+        if mode == AppMode.CUSTOMER:
+            resp = requests.post("https://192.168.1.3:8443/login/customer", verify="root-ca.crt", params={"user": username, "pass": password} )
+        else:
+            resp = requests.post("https://192.168.1.3:8443/login/staff", verify="root-ca.crt", params={"user": username, "pass": password} )
 
-    data = resp.json()
+        data = resp.json()
 
-    token = None
-    if data["status"] == "OK":
-        token = data["auth_token"]
+        token = None
+        if data["status"] == "OK":
+            token = data["auth_token"]
+            print_http_response(resp)
+            break
+        
+        print_http_response(resp)
 
-    print_http_response(resp)
     
     #Change global token
     return token
@@ -190,7 +194,6 @@ def gift_giftcard():
             continue
             
         break
-    print(target)
 
     resp = requests.post("https://192.168.1.3:8443/giftcard/give", verify="root-ca.crt", params={"auth_token": auth_token, "target": target, "id": giftcard_id, "nonce": giftcard_nonce} )
 
