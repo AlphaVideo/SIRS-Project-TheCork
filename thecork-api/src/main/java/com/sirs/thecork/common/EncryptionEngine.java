@@ -33,6 +33,10 @@ public class EncryptionEngine {
 		return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES"); 
 	}
 	
+	public GCMParameterSpec stringToIv(String iv){
+		return new GCMParameterSpec(128, Base64.getDecoder().decode(iv));
+	}
+	
 	public SecretKey generateKey(int bits) throws NoSuchAlgorithmException {
 	    KeyGenerator keyGenerator;
 	    SecretKey key;
