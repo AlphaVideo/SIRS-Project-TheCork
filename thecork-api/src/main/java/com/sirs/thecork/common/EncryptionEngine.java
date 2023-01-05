@@ -12,12 +12,15 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-public class EncriptionEngine {
+public class EncryptionEngine {
 
-	public EncriptionEngine() {
+	private final String iv64 = "LJEKMImGCiCL7K22b28nYg==";
+
+	public EncryptionEngine() {
 	}
 	
 	
@@ -41,22 +44,26 @@ public class EncriptionEngine {
 	    return key;
 	}
 	
-	public IvParameterSpec generateIv(int bits) {
+	public GCMParameterSpec generateIv(int bits) {
 		SecureRandom rand = new SecureRandom();
 		byte[] iv = new byte[16];
 	    rand.nextBytes(iv);
+	    
+	    String ivS = Base64.getEncoder().encodeToString(iv);
+	    System.out.println("IV: " + ivS);
 
-	    return new IvParameterSpec(iv);
+	    return new GCMParameterSpec(128, iv);
 	}
 	
-	public String encryptGCM(String plaintext, SecretKey key, IvParameterSpec iv) throws InvalidKeyException,
+	public String encryptGCM(String plaintext, SecretKey key, GCMParameterSpec iv) throws InvalidKeyException,
 				InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchPaddingException,
 				IllegalBlockSizeException, BadPaddingException {
 		
 		Cipher cipher;
 		byte[] ciphertext;
+		GCMParameterSpec spec;
 		
-		cipher = Cipher.getInstance("AES/GCM");
+		cipher = Cipher.getInstance("AES/GCM/NoPadding");
 	    cipher.init(Cipher.ENCRYPT_MODE, key, iv);
 	    ciphertext = cipher.doFinal(plaintext.getBytes());
 
@@ -77,16 +84,21 @@ public class EncriptionEngine {
 	    return Base64.getEncoder().encodeToString(ciphertext);
 	}
 	
-	public String decryptGCM(String ciphertext, SecretKey key, IvParameterSpec iv) throws NoSuchPaddingException,
+	public String decryptGCM(String ciphertext, SecretKey key, GCMParameterSpec iv) throws NoSuchPaddingException,
 				NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException,
 				BadPaddingException, IllegalBlockSizeException {
 		    
 		    Cipher cipher;
 		    byte[] plaintext;
 		    
-		    cipher = Cipher.getInstance("AES/GCM");
-		    cipher.init(Cipher.DECRYPT_MODE, key, iv);
-		    plaintext = cipher.doFinal(Base64.getDecoder().decode(ciphertext));
+		    try {
+				cipher = Cipher.getInstance("AES/GCM/NoPadding");
+				cipher.init(Cipher.DECRYPT_MODE, key, iv);
+				plaintext = cipher.doFinal(Base64.getDecoder().decode(ciphertext));
+		    }
+		    catch (javax.crypto.AEADBadTagException e) {
+		    	return null;
+		    }
 
 		    return new String(plaintext);
 		}

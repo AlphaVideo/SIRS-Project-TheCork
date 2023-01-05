@@ -11,6 +11,9 @@ sudo mysql -u sirs -psirs thecork -e "CREATE TABLE reservation(clientUsername VA
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE staff(username VARCHAR(32) NOT NULL, restaurantName VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, auth_token CHAR(32),token_exp_time TIMESTAMP, PRIMARY KEY(username), FOREIGN KEY(restaurantName) REFERENCES restaurant(name));"
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard(id INT UNSIGNED UNIQUE AUTO_INCREMENT NOT NULL, nonce CHAR(32) NOT NULL, owner VARCHAR(32), value INT NOT NULL, PRIMARY KEY(id), FOREIGN KEY (owner) REFERENCES client(username));"
 
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE client_ivs(username VARCHAR(32), iv CHAR(24), FOREIGN KEY (username) REFERENCES client(username));"
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard_ivs(id INT UNSIGNED, iv CHAR(24), FOREIGN KEY (id) REFERENCES giftcard(id));"
+
 #
 # populate tables
 #

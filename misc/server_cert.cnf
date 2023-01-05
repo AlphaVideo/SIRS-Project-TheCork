@@ -1,0 +1,22 @@
+[req]
+distinguished_name = req_distinguished_name
+req_extensions = req_ext
+prompt = no
+
+[req_distinguished_name]
+C   = IN
+ST  = Karnataka
+L   = Bengaluru
+O   = GoLinuxCloud
+OU  = R&D
+CN  = ban21.example.com
+
+[req_ext]
+subjectAltName = @alt_names
+
+[alt_names]
+IP.1 = 10.10.10.13
+IP.2 = 10.10.10.14
+IP.3 = 10.10.10.17
+DNS.1 = centos8-2.example.com
+DNS.2 = centos8-3.example.com
