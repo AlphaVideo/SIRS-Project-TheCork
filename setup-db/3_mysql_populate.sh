@@ -35,10 +35,10 @@ sudo mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('mcadmin', 'McDo
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('Duarte', 'Modesta da Pampulha', 'a8ec9d72a2bf62779f7f4197c11b1696ee685d1811c01a387caf7430813ffa27', 'croquetes1', NULL, NULL);" #pass = maria123
 
 # giftcards
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '0748d697590086e39bbde2ec93009495', NULL, '8vpSCglSQ9GB5RXPHG1mb5fr');"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '1a88bd55bf5d333996369efd27aebe20', NULL, '1oR5uD5Xq00gi0lwQ3d+pveU');"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'cb33ba6f7b097bebf4d2ebf6430c2841', NULL, 'pOpizzV9xPlhWKkps+jXCEvc');"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'd7d5f80f1c73091c1a108e64f24514a5', NULL, 'B6nlg2AV42NZapKy1+rMm6sSUg==');"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '0748d697590086e39bbde2ec93009495', NULL, '10');"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '1a88bd55bf5d333996369efd27aebe20', NULL, '25');"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'cb33ba6f7b097bebf4d2ebf6430c2841', NULL, '50');"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'd7d5f80f1c73091c1a108e64f24514a5', NULL, '100');"
 
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('Eduu',  'ftMPYfS7wZTkD+WJLf6Mow==');"
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('Lopes', 'AKXKOfiyGuoWKMWVOmHJqw==');"
