@@ -16,25 +16,26 @@ Once all 4 different roles are properly setup (DB, API, Router and Client), proc
 
 Once done, the client script is relatively straightforward. Some of the users the client can login to are as follows:
 **Customer**
-- `Username:` Eduu ; `Password:` getInTheRobot
-- `Username:` Tomas ; `Password:` daikonlegs
-- `Username:` Lopes ; `Password:` cherryl0ve
-- `Username:` user ; `Password:` password
+- `Username:` Eduu  ;  `Password:` getInTheRobot
+- `Username:` Tomas ;  `Password:` daikonlegs
+- `Username:` Lopes ;  `Password:` cherryl0ve
+- `Username:` user  ;  `Password:` password
 
 **Staff**
-- `Username:` Duarte ; `Password:` maria123
-- `Username:` mcadmin ; `Password:` admin
+- `Username:` Duarte  ;  `Password:` maria123
+- `Username:` mcadmin ;  `Password:` admin
 
-## Project strucutre
+## Project structure
 Organization of project folders:
 
-- `setup-client/`: scripts to be run inside VM3 to setup before starting service
-- `setup-api/`: scripts to be run inside VM2 to setup before starting service
-- `setup-db/`: scripts to be run inside VM1 to setup before starting service
-- `thecork-api/`: code regarding REST API for VM2
+- `setup-client/`: scripts to be run inside a VM to setup the client before starting service
+- `setup-router/`: scripts to be run inside a VM to setup the router before starting service
+- `setup-api/`: scripts to be run inside a VM to setup the api before starting service
+- `setup-db/`: scripts to be run inside a VM to setup the db before starting service
+- `thecork-api/`: code regarding REST API for service functionality. This is where you'll startup TheCork live service.
+- `thecork-client/`: code regarding the CLI client application to connect to the service.
+- `misc/`: certificate files and keys for the API
+- `msql-keys/:`: certificate files and keys for the DB
 
-Note: setup scripts should be divided in different files. They should cover:
-
-- IP and network configuration (iptables)
-- Firewall configuration
-- Database setup (on VM1)
+***Notes:***
+- Follow the file `setup-db/3_mysql_populate.sh` to check the used Database structure
