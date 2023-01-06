@@ -326,7 +326,7 @@ public class CustomerCommander {
 
 			stmt = _connection.prepareStatement("INSERT INTO giftcard VALUES (0, ?, NULL, ?);");
             stmt.setString(1, tokenString.toString());
-            stmt.setString(2, String.format("%03d", value));
+            stmt.setString(2, Integer.toString(value));
 			stmt.executeUpdate();
 
 
