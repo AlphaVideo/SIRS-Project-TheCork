@@ -72,20 +72,6 @@ public class EncryptionEngine {
 	    return Base64.getEncoder().encodeToString(ciphertext);
 	}
 
-	public String encryptECB(String plaintext, SecretKey key) throws InvalidKeyException,
-				InvalidAlgorithmParameterException, NoSuchAlgorithmException, NoSuchPaddingException,
-				IllegalBlockSizeException, BadPaddingException {
-		
-		Cipher cipher;
-		byte[] ciphertext;
-		
-		cipher = Cipher.getInstance("AES/ECB");
-	    cipher.init(Cipher.ENCRYPT_MODE, key);
-	    ciphertext = cipher.doFinal(plaintext.getBytes());
-
-	    return Base64.getEncoder().encodeToString(ciphertext);
-	}
-	
 	public String decryptGCM(String ciphertext, SecretKey key, GCMParameterSpec iv) throws NoSuchPaddingException,
 				NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException,
 				BadPaddingException, IllegalBlockSizeException {
@@ -99,24 +85,10 @@ public class EncryptionEngine {
 				plaintext = cipher.doFinal(Base64.getDecoder().decode(ciphertext));
 		    }
 		    catch (javax.crypto.AEADBadTagException e) {
+		    	e.printStackTrace();
 		    	return null;
 		    }
 
 		    return new String(plaintext);
 		}
-
-	public String decryptECB(String ciphertext, SecretKey key) throws NoSuchPaddingException,
-				NoSuchAlgorithmException, InvalidAlgorithmParameterException, InvalidKeyException,
-				BadPaddingException, IllegalBlockSizeException {
-		    
-		    Cipher cipher;
-		    byte[] plaintext;
-		    
-		    cipher = Cipher.getInstance("AES/ECB");
-		    cipher.init(Cipher.DECRYPT_MODE, key);
-		    plaintext = cipher.doFinal(Base64.getDecoder().decode(ciphertext));
-
-		    return new String(plaintext);
-		}
-
 }

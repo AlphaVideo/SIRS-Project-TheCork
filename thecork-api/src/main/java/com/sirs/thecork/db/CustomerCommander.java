@@ -186,7 +186,7 @@ public class CustomerCommander {
             }
 
 
-		} catch (SQLException e) {
+		} catch (SQLException | NumberFormatException | InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException e) {
 			// add info to logger
 			e.printStackTrace();
             return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
@@ -196,6 +196,8 @@ public class CustomerCommander {
     public String redeem_giftcard(String auth_token, int id, String nonce) {
 		PreparedStatement stmt;
 		ResultSet res = null;
+		String valueEnc;
+		int value;
 
         String user = _tokenManager.validateToken(auth_token);
         if (user == null)
@@ -204,7 +206,7 @@ public class CustomerCommander {
 		try {
             //We can assume the user exists because he already went through the login process
             //First we must find if giftcard exists and it belongs to the user
-			stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE id = ?;");
+			stmt = _connection.prepareStatement("SELECT value FROM giftcard WHERE id = ?;");
             stmt.setInt(1, id);
 			res = stmt.executeQuery();
 
@@ -212,26 +214,47 @@ public class CustomerCommander {
             if (check != null)
                 return check;
 
-            int value = res.getInt("value");
+            valueEnc = res.getString("value");
+            value = Integer.parseInt(_vault.giftcardDecipher(id, valueEnc));
 
             stmt = _connection.prepareStatement("DELETE FROM giftcard WHERE id = ?;");
             stmt.setInt(1, id);
             stmt.executeUpdate();
-
-            stmt = _connection.prepareStatement("UPDATE client SET wallet = wallet + ? WHERE username = ?;");
-            stmt.setInt(1, value);
-            stmt.setString(2, user);
-            stmt.executeUpdate();
+            
+            incrementWallet(user, value);
 
 		} catch (SQLException e) {
-			// add info to logger
 			e.printStackTrace();
             return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 		}
+		catch (NumberFormatException | InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException e) {
+			e.printStackTrace();
+            return JsonToolkit.generateStatus("ERROR", "Unknown encryption error").toString();
+		}
 
-        //Everything succeeded
         return JsonToolkit.generateStatus("OK").toString();
 	}
+    
+    private void incrementWallet(String user, int val) throws SQLException, NumberFormatException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException {
+		PreparedStatement stmt;
+		ResultSet res;
+		String walletEnc;
+		int wallet;
+
+		stmt = _connection.prepareStatement("SELECT wallet FROM client WHERE username = ?;");
+		stmt.setString(1, user);
+		res = stmt.executeQuery();
+		
+		res.next();
+		walletEnc = res.getString("wallet");
+		
+		wallet = Integer.parseInt(_vault.clientDecipher(user, walletEnc));
+		wallet += val;
+
+		stmt = _connection.prepareStatement("UPDATE client SET wallet = ? WHERE username = ?;");
+		stmt.setString(1, _vault.clientEncipher(user, Integer.toString(wallet)));
+		stmt.executeUpdate();
+    }
 
     public String give_giftcard(String auth_token, String target, int id, String nonce) {
 		PreparedStatement stmt;
