@@ -252,7 +252,7 @@ public class CustomerCommander {
 		wallet += val;
 
 		stmt = _connection.prepareStatement("UPDATE client SET wallet = ? WHERE username = ?;");
-		stmt.setString(1, _vault.clientEncipher(user, Integer.toString(wallet)));
+		stmt.setString(1, _vault.clientEncipher(user, String.format("%03d", wallet)));
 		stmt.setString(2,  user);
 		stmt.executeUpdate();
     }
@@ -326,7 +326,7 @@ public class CustomerCommander {
 
 			stmt = _connection.prepareStatement("INSERT INTO giftcard VALUES (0, ?, NULL, ?);");
             stmt.setString(1, tokenString.toString());
-            stmt.setString(2, String.valueOf(value));
+            stmt.setString(2, String.format("%03d", value));
 			stmt.executeUpdate();
 
 
