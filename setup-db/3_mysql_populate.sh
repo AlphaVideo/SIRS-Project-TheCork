@@ -25,10 +25,10 @@ sudo mysql -u sirs -psirs thecork -e "INSERT INTO restaurant VALUES ('Udon');"
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO restaurant VALUES ('Modesta da Pampulha');"
 
 # client - passwords hashed with Sha256 and salted with 10 character long suffixation
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Eduu', '47406eb8081eab32005cb1d7a599b4930951dca1756314bb4f3deff83d3c0937', 's4lt3dG00d', 'JCmA/zFZgLIXRQxw5q0HhOE=', NULL, NULL);" #pass = getInTheRobot
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Tomas', '407f95bbb48e67e2519d1ffdd3e82c5bf19b395d568f5b513cadcfbdcc31d900', 'a8racada8r', '49j9lNOhVUIPS6GHrcDouc0=', NULL, NULL);" #pass = daikonlegs
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Lopes', '2ab21cf9256fa523534fce1dccf090f007b9771c4d0a6b9c3db8e6e8d8df4a86', 'sheepless0', 'x5ehqGV01JImwd8dI33wFrc=', NULL, NULL);" #pass = cherryl0ve
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('user', '71049f0dada4ddb3e3aa27f8c601d238b076fbed005e587b83899fe7e0e560a2', 'g3n3r1cdud', 'lnwYnpbj++q+dasQmqTlkF0=', NULL, NULL);" #pass = password
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Eduu', '47406eb8081eab32005cb1d7a599b4930951dca1756314bb4f3deff83d3c0937', 's4lt3dG00d',  'HlSZtvezMfn4oUDag1niRpjr9A==', NULL, NULL);" #pass = getInTheRobot
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Tomas', '407f95bbb48e67e2519d1ffdd3e82c5bf19b395d568f5b513cadcfbdcc31d900', 'a8racada8r', 'SQNuLyc3HfOqUBVT+g+XXdLk/A==', NULL, NULL);" #pass = daikonlegs
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Lopes', '2ab21cf9256fa523534fce1dccf090f007b9771c4d0a6b9c3db8e6e8d8df4a86', 'sheepless0', '+qi2IAPXIXOOfLfTHBlnUpxEVA==', NULL, NULL);" #pass = cherryl0ve
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('user', '71049f0dada4ddb3e3aa27f8c601d238b076fbed005e587b83899fe7e0e560a2', 'g3n3r1cdud',  'VW7sE6PD/xdIf1KOv9Pe1vI4Uw==', NULL, NULL);" #pass = password
 
 # staff - passwords hashed with Sha256 and salted with 10 character long suffixation
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO staff VALUES ('mcadmin', 'McDonalds', '6814b9dfd1d1191d8ee4e7114f70a0de09c1075438bd4b4c59ef6c743b26f9bb', '1234fries5', NULL, NULL);" #pass = admin
@@ -40,10 +40,10 @@ sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, '1a88bd55b
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'cb33ba6f7b097bebf4d2ebf6430c2841', NULL, '50');"
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard VALUES (0, 'd7d5f80f1c73091c1a108e64f24514a5', NULL, '100');"
 
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('Eduu',  'ftMPYfS7wZTkD+WJLf6Mow==');"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('Lopes', 'AKXKOfiyGuoWKMWVOmHJqw==');"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('Tomas', 'issRZj585pi+2P5pnCbJAw==');"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('user',  'XH8EOF0fYBdlPkslZLrC1Q==');"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('Eduu',  'C1SMRs1zSZ/+4Q8Y1saD/A==');"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('Lopes', 'haoZG/k61J892osBfg8aaw==');"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('Tomas', 'yIjCaPYZPzT6gqZtdkJWdQ==');"
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('user',  '/+A0kH8gY89su2z1sLcCjQ==');"
 
 #sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard_ivs VALUES (0, '5UFXnPuUkpzfDkcNo42BNQ==');"
 #sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard_ivs VALUES (0, 'VUAPCw3iYJpXSkdcNRQzLA==');"
