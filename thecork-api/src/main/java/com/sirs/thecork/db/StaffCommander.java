@@ -105,7 +105,7 @@ public class StaffCommander {
 
 			stmt = _connection.prepareStatement("INSERT INTO giftcard VALUES (0, ?, NULL, ?);");
             stmt.setString(1, tokenString.toString());
-            stmt.setInt(2, value);
+            stmt.setString(2, String.valueOf(value));
 			count = stmt.executeUpdate();
 
 		} catch (SQLException e) {
