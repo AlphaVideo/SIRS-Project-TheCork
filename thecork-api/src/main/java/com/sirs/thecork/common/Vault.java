@@ -30,18 +30,71 @@ public class Vault {
 		_conn = DatabaseConnection.getConnection();
 		_ngn = new EncryptionEngine();
 		_key = _ngn.stringToKey(_keyStr);
-		conversorFdd();
-		conversorFdd2();
-		
-		//try {
-			//System.out.println(_ngn.encryptGCM("12345678", k, new GCMParameterSpec(128, Base64.getDecoder().decode(iv64))));
-			//System.out.println(_ngn.encryptGCM("123456789ABCDEF0", k, new GCMParameterSpec(128, Base64.getDecoder().decode(iv64))));
-			//System.out.println(_ngn.decryptGCM("8mddTBql4gOXLuSJR2IJV8B7o1Nu/Y2fm6dAP5v8eCg=", k, new GCMParameterSpec(128, Base64.getDecoder().decode(iv64))));
-
-		//} catch (NoSuchAlgorithmException | InvalidKeyException | InvalidAlgorithmParameterException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
-			//e.printStackTrace();
-		//}
+		//conversorFdd();
+		//conversorFdd2();
 	}
+	
+	public String clientDecipher(String user, String ciphertext) throws SQLException, NumberFormatException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException {
+		PreparedStatement stmt;
+		ResultSet res;
+		GCMParameterSpec iv;
+		
+		stmt = _conn.prepareStatement("SELECT iv FROM client_ivs WHERE username = ?;");
+		stmt.setString(1,  user);
+		res = stmt.executeQuery();			
+		res.next();
+		
+		iv = _ngn.stringToIv(res.getString("iv"));
+		
+		return _ngn.decryptGCM(ciphertext, _key, iv);
+	}
+	
+	public String clientEncipher(String user, String plaintext) throws SQLException, NumberFormatException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException {
+		PreparedStatement stmt;
+		ResultSet res;
+		GCMParameterSpec iv;
+		
+		stmt = _conn.prepareStatement("SELECT iv FROM client_ivs WHERE username = ?;");
+		stmt.setString(1,  user);
+		res = stmt.executeQuery();			
+		res.next();
+		
+		iv = _ngn.stringToIv(res.getString("iv"));
+		
+		return _ngn.encryptGCM(plaintext, _key, iv);
+	}
+	
+	
+	public String giftcardDecipher(int id, String ciphertext) throws SQLException, NumberFormatException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException {
+		PreparedStatement stmt;
+		ResultSet res;
+		GCMParameterSpec iv;
+		
+		stmt = _conn.prepareStatement("SELECT iv FROM giftcard_ivs WHERE id = ?;");
+		stmt.setInt(1,  id);
+		res = stmt.executeQuery();			
+		res.next();
+		
+		iv = _ngn.stringToIv(res.getString("iv"));
+		
+		return _ngn.decryptGCM(ciphertext, _key, iv);
+	}
+	
+	public String giftcardEncipher(int id, String plaintext) throws SQLException, NumberFormatException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException {
+		PreparedStatement stmt;
+		ResultSet res;
+		GCMParameterSpec iv;
+		
+		stmt = _conn.prepareStatement("SELECT iv FROM giftcard_ivs WHERE id = ?;");
+		stmt.setInt(1,  id);
+		res = stmt.executeQuery();			
+		res.next();
+		
+		iv = _ngn.stringToIv(res.getString("iv"));
+		
+		return _ngn.encryptGCM(plaintext, _key, iv);
+	}
+	
 	
 	private void conversorFdd() {
 		PreparedStatement stmt;
@@ -54,7 +107,7 @@ public class Vault {
 			stmt = _conn.prepareStatement("SELECT username,wallet FROM client;");
 			res = stmt.executeQuery();
 			
-            while (!res.next()) {
+            while (res.next()) {
 				name = res.getString("username");
 				wallet = res.getInt("wallet");
 				
@@ -72,71 +125,23 @@ public class Vault {
 		PreparedStatement stmt;
 		ResultSet res;
 		GCMParameterSpec iv;
-		String owner;
 		int id, value;
 		
 		try {
-			stmt = _conn.prepareStatement("SELECT id,owner,value FROM giftcard;");
+			stmt = _conn.prepareStatement("SELECT id,value FROM giftcard;");
 			res = stmt.executeQuery();
 			
-            while (!res.next()) {
+            while (res.next()) {
 				id = res.getInt("id");
-				owner = res.getString("owner");
 				value = res.getInt("value");
 				
 				System.out.println("id: " + id);
 				iv = _ngn.generateIv(128);
-				System.out.println("owner: " + _ngn.encryptGCM(owner, _key, iv));
 				System.out.println("value: " + _ngn.encryptGCM(Integer.toString(value), _key, iv));
             }
 		}
 		catch (SQLException | InvalidKeyException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private GCMParameterSpec getClientIv(String user) {
-		PreparedStatement stmt;
-		ResultSet res;
-		String iv;
-		
-		try {
-			stmt = _conn.prepareStatement("SELECT iv FROM client_ivs WHERE username = ?;");
-			stmt.setString(1, user);
-			res = stmt.executeQuery();
-			
-            if(!res.isBeforeFirst())
-            	return null;
-            
-            res.next();
-            iv = res.getString("iv");
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return new GCMParameterSpec(128, Base64.getDecoder().decode(iv));		
-	}
-	private GCMParameterSpec getGiftcardIv(int id) {
-		PreparedStatement stmt;
-		ResultSet res;
-		String iv;
-		
-		try {
-			stmt = _conn.prepareStatement("SELECT iv FROM giftcard_ivs WHERE id = ?;");
-			stmt.setInt(1, id);
-			res = stmt.executeQuery();
-			
-            if(!res.isBeforeFirst())
-            	return null;
-            
-            res.next();
-            iv = res.getString("iv");
-		}
-		catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return new GCMParameterSpec(128, Base64.getDecoder().decode(iv));		
 	}
 }
