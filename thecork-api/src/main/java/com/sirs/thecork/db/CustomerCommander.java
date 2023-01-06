@@ -141,9 +141,7 @@ public class CustomerCommander {
 
             //Find if there is an eligible gift card
             stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE value = ? and owner is NULL LIMIT 1;");
-            StringBuilder sb = new StringBuilder(); // or StringBuffer
-            sb.append(value);
-            stmt.setString(1, sb.toString());
+            stmt.setString(1, Integer.toString(value));
             res = stmt.executeQuery();
 
             //Check if result set isn't empty
@@ -156,7 +154,7 @@ public class CustomerCommander {
             int id = res.getInt("id");
 
             String user_enc = _vault.giftcardEncipher(id, user);
-            String value_enc = _vault.giftcardEncipher(id, sb.toString());
+            String value_enc = _vault.giftcardEncipher(id, Integer.toString(value));
 
             //Activate a giftcard - first giftcard with the value wanted that has no owner
             stmt = _connection.prepareStatement("UPDATE giftcard SET owner = ?, value = ? WHERE id = ?;");
@@ -175,7 +173,7 @@ public class CustomerCommander {
                 res.next();
                 JSONObject json = new JSONObject();
                 json.put("status", "OK");
-                json.put("value", res.getInt("value"));
+                json.put("value", res.getString("value"));
                 json.put("card_id", res.getInt("id"));
                 json.put("card_code", res.getString("nonce"));
 
