@@ -141,9 +141,7 @@ public class CustomerCommander {
 
             //Find if there is an eligible gift card
             stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE value = ? and owner is NULL LIMIT 1;");
-            StringBuilder sb = new StringBuilder(); // or StringBuffer
-            sb.append(value);
-            stmt.setString(1, sb.toString());
+            stmt.setString(1, Integer.toString(value));
             res = stmt.executeQuery();
 
             //Check if result set isn't empty
@@ -156,7 +154,7 @@ public class CustomerCommander {
             int id = res.getInt("id");
 
             String user_enc = _vault.giftcardEncipher(id, user);
-            String value_enc = _vault.giftcardEncipher(id, sb.toString());
+            String value_enc = _vault.giftcardEncipher(id, Integer.toString(value));
 
             //Activate a giftcard - first giftcard with the value wanted that has no owner
             stmt = _connection.prepareStatement("UPDATE giftcard SET owner = ?, value = ? WHERE id = ?;");
@@ -172,10 +170,9 @@ public class CustomerCommander {
                 create_giftcard(value);
 
                 //Obtain purchased gift card's information for user
-                res.next();
                 JSONObject json = new JSONObject();
                 json.put("status", "OK");
-                json.put("value", res.getInt("value"));
+                json.put("value", value);
                 json.put("card_id", res.getInt("id"));
                 json.put("card_code", res.getString("nonce"));
 
@@ -206,17 +203,20 @@ public class CustomerCommander {
 		try {
             //We can assume the user exists because he already went through the login process
             //First we must find if giftcard exists and it belongs to the user
-			stmt = _connection.prepareStatement("SELECT value FROM giftcard WHERE id = ?;");
+			stmt = _connection.prepareStatement("SELECT * FROM giftcard WHERE id = ?;");
             stmt.setInt(1, id);
 			res = stmt.executeQuery();
 
-            String check = checkGiftCard(res, user, nonce);
+            String check = checkGiftCard(res, id, user, nonce);
             if (check != null)
                 return check;
 
             valueEnc = res.getString("value");
             value = Integer.parseInt(_vault.giftcardDecipher(id, valueEnc));
-
+            
+            stmt = _connection.prepareStatement("DELETE FROM giftcard_ivs WHERE id = ?;");
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
             stmt = _connection.prepareStatement("DELETE FROM giftcard WHERE id = ?;");
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -253,6 +253,7 @@ public class CustomerCommander {
 
 		stmt = _connection.prepareStatement("UPDATE client SET wallet = ? WHERE username = ?;");
 		stmt.setString(1, _vault.clientEncipher(user, Integer.toString(wallet)));
+		stmt.setString(2,  user);
 		stmt.executeUpdate();
     }
 
@@ -271,7 +272,7 @@ public class CustomerCommander {
             stmt.setInt(1, id);
 			res = stmt.executeQuery();
 
-            String check = checkGiftCard(res, user, nonce);
+            String check = checkGiftCard(res, id, user, nonce);
             if (check != null)
                 return check;
 
@@ -291,10 +292,13 @@ public class CustomerCommander {
             stmt.setInt(2, id);
             stmt.executeUpdate();
 
-        } catch (SQLException e) {
-			// add info to logger
+        } catch (SQLException  e) {
 			e.printStackTrace();
             return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
+		}
+		catch (NumberFormatException | InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException e) {
+			e.printStackTrace();
+			return JsonToolkit.generateStatus("ERROR", "Unknown encryption error").toString();
 		}
 
         //Everything succeeded
@@ -373,12 +377,16 @@ public class CustomerCommander {
 		return JsonToolkit.generateStatus("OK", "balance", Integer.parseInt(balanceDec)).toString();
 	}
 
-    private String checkGiftCard(ResultSet res, String owner, String nonce) throws SQLException{
-        if(!res.isBeforeFirst())
-            return JsonToolkit.generateStatus("ERROR", "Giftcard non-existent").toString();
-
-        res.next();
-        if (!res.getObject("owner").equals(owner))
+    private String checkGiftCard(ResultSet res, int id, String owner, String nonce) throws SQLException, NumberFormatException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException{
+    	String realOwner;
+    	
+    	 if(!res.isBeforeFirst())
+             return JsonToolkit.generateStatus("ERROR", "Giftcard non-existent").toString();
+    	
+    	res.next();
+    	realOwner = _vault.giftcardDecipher(id, res.getString("owner"));
+    	
+        if (!realOwner.equals(owner))
             return JsonToolkit.generateStatus("ERROR", "Not the owner").toString();
         if (!res.getObject("nonce").equals(nonce))
             return JsonToolkit.generateStatus("ERROR", "Invalid nonce").toString();
