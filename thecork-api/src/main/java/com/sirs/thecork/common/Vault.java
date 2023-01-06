@@ -108,8 +108,6 @@ public class Vault {
 		return _ngn.encryptGCM(plaintext, _key, iv);
 	}
 	public String giftcardFirstEncipher(String plaintext) throws SQLException, NumberFormatException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException {
-		PreparedStatement stmt;
-		ResultSet res;
 		GCMParameterSpec iv;
 		
 		iv = createGiftcardIv();
