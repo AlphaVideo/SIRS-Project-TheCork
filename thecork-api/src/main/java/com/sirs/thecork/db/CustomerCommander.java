@@ -288,7 +288,7 @@ public class CustomerCommander {
             }
             //Change Ownership
             stmt = _connection.prepareStatement("UPDATE giftcard SET owner = ? WHERE id = ?;");
-            stmt.setString(1, target);
+            stmt.setString(1, _vault.giftcardEncipher(id, target));
             stmt.setInt(2, id);
             stmt.executeUpdate();
 

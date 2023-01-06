@@ -98,20 +98,13 @@ public class Vault {
 		res = stmt.executeQuery();			
 		
 		if (!res.isBeforeFirst()) {
-			iv = createGiftcardIv();
+			iv = createGiftcardIv(id);
 		}
 		else {
 			res.next();
 			iv = _ngn.stringToIv(res.getString("iv"));
 		}
 		
-		return _ngn.encryptGCM(plaintext, _key, iv);
-	}
-	public String giftcardFirstEncipher(String plaintext) throws SQLException, NumberFormatException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException {
-		GCMParameterSpec iv;
-		
-		iv = createGiftcardIv();
-
 		return _ngn.encryptGCM(plaintext, _key, iv);
 	}
 	
@@ -133,15 +126,16 @@ public class Vault {
 		return iv;
 	}
 
-	private GCMParameterSpec createGiftcardIv() throws SQLException {
+	private GCMParameterSpec createGiftcardIv(int id) throws SQLException {
 		PreparedStatement stmt;
 		GCMParameterSpec iv;
 		int res;
 		
 		iv = _ngn.generateIv(128);
 		
-		stmt = _conn.prepareStatement("INSERT INTO giftcard_ivs VALUES(0, ?);");
-		stmt.setString(1, _ngn.ivToString(iv));
+		stmt = _conn.prepareStatement("INSERT INTO giftcard_ivs VALUES(?, ?);");
+		stmt.setInt(1, id);
+		stmt.setString(2, _ngn.ivToString(iv));
 		res = stmt.executeUpdate();
 		
 		if (res != 1)
