@@ -155,8 +155,8 @@ public class CustomerCommander {
             res.next();
             int id = res.getInt("id");
 
-            String user_enc = vault.giftcardEncipher(id, user);
-            String value_enc = vault.giftcardEncipher(id, sb.toString());
+            String user_enc = _vault.giftcardEncipher(id, user);
+            String value_enc = _vault.giftcardEncipher(id, sb.toString());
 
             //Activate a giftcard - first giftcard with the value wanted that has no owner
             stmt = _connection.prepareStatement("UPDATE giftcard SET owner = ?, value = ? WHERE id = ?;");
