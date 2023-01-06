@@ -9,7 +9,7 @@ sudo mysql -u sirs -psirs thecork -e "CREATE TABLE restaurant(name VARCHAR(32) N
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE client(username VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, wallet VARCHAR(28) NOT NULL, auth_token CHAR(32),token_exp_time TIMESTAMP, PRIMARY KEY(username));"
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE reservation(clientUsername VARCHAR(32) NOT NULL, restaurantName VARCHAR(32) NOT NULL, time DATETIME NOT NULL, nPeople INT NOT NULL, PRIMARY KEY(clientUsername,restaurantName,time), FOREIGN KEY (clientUsername) REFERENCES client(username), FOREIGN KEY (restaurantName) REFERENCES restaurant(name));"
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE staff(username VARCHAR(32) NOT NULL, restaurantName VARCHAR(32) NOT NULL, pass_hash CHAR(64) NOT NULL, pass_salt CHAR(10) NOT NULL, auth_token CHAR(32),token_exp_time TIMESTAMP, PRIMARY KEY(username), FOREIGN KEY(restaurantName) REFERENCES restaurant(name));"
-sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard(id INT UNSIGNED UNIQUE AUTO_INCREMENT NOT NULL, nonce CHAR(32) NOT NULL, owner VARCHAR(64), value VARCHAR(28) NOT NULL, PRIMARY KEY(id), FOREIGN KEY (owner) REFERENCES client(username));"
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard(id INT UNSIGNED UNIQUE AUTO_INCREMENT NOT NULL, nonce CHAR(32) NOT NULL, owner VARCHAR(64), value VARCHAR(28) NOT NULL, PRIMARY KEY(id));"
 
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE client_ivs(username VARCHAR(32), iv CHAR(24), FOREIGN KEY (username) REFERENCES client(username));"
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard_ivs(id INT UNSIGNED AUTO_INCREMENT NOT NULL, iv CHAR(24), FOREIGN KEY (id) REFERENCES giftcard(id));"
@@ -26,8 +26,8 @@ sudo mysql -u sirs -psirs thecork -e "INSERT INTO restaurant VALUES ('Modesta da
 
 # client - passwords hashed with Sha256 and salted with 10 character long suffixation
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Eduu', '47406eb8081eab32005cb1d7a599b4930951dca1756314bb4f3deff83d3c0937', 's4lt3dG00d', 'JCmA/zFZgLIXRQxw5q0HhOE=', NULL, NULL);" #pass = getInTheRobot
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Tomas', '407f95bbb48e67e2519d1ffdd3e82c5bf19b395d568f5b513cadcfbdcc31d900', 'a8racada8r', 'x5ehqGV01JImwd8dI33wFrc=', NULL, NULL);" #pass = daikonlegs
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Lopes', '2ab21cf9256fa523534fce1dccf090f007b9771c4d0a6b9c3db8e6e8d8df4a86', 'sheepless0', '49j9lNOhVUIPS6GHrcDouc0=', NULL, NULL);" #pass = cherryl0ve
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Tomas', '407f95bbb48e67e2519d1ffdd3e82c5bf19b395d568f5b513cadcfbdcc31d900', 'a8racada8r', '49j9lNOhVUIPS6GHrcDouc0=', NULL, NULL);" #pass = daikonlegs
+sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('Lopes', '2ab21cf9256fa523534fce1dccf090f007b9771c4d0a6b9c3db8e6e8d8df4a86', 'sheepless0', 'x5ehqGV01JImwd8dI33wFrc=', NULL, NULL);" #pass = cherryl0ve
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO client VALUES ('user', '71049f0dada4ddb3e3aa27f8c601d238b076fbed005e587b83899fe7e0e560a2', 'g3n3r1cdud', 'lnwYnpbj++q+dasQmqTlkF0=', NULL, NULL);" #pass = password
 
 # staff - passwords hashed with Sha256 and salted with 10 character long suffixation
