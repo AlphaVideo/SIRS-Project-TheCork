@@ -1,6 +1,8 @@
 package com.sirs.thecork.db;
 
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -9,19 +11,26 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
 import org.json.JSONObject;
 
 import com.sirs.thecork.common.JsonToolkit;
 import com.sirs.thecork.common.TokenManager;
+import com.sirs.thecork.common.Vault;
 
 public class CustomerCommander {
 
-    Connection _connection = null;
-    TokenManager _tokenManager = null;
+    Connection _connection;
+    TokenManager _tokenManager;
+    Vault _vault;
 
     public CustomerCommander() {
         _connection = DatabaseConnection.getConnection();
         _tokenManager = new TokenManager(_connection, false);
+        _vault = new Vault();
 	}
 
     public String loginCustomer(String user, String pass) {
@@ -298,7 +307,7 @@ public class CustomerCommander {
     public String check_balance(String auth_token) {
 		PreparedStatement stmt;
 		ResultSet res = null;
-        int balance;
+        String balanceEnc, balanceDec;
 
         String user = _tokenManager.validateToken(auth_token);
         if (user == null)
@@ -312,22 +321,24 @@ public class CustomerCommander {
 			res = stmt.executeQuery();
 
             //Check if result set isn't empty
-            if(!res.isBeforeFirst()) {
-                //Empty
+            if(!res.isBeforeFirst())
                 return JsonToolkit.generateStatus("ERROR", "SQL Query returned no results").toString();
-            }
             else
                 res.next();
 
-            balance = res.getInt("wallet");
-
-            return JsonToolkit.generateStatus("OK", "balance", Integer.toString(balance)).toString();
+            balanceEnc = res.getString("wallet");
+			balanceDec = _vault.clientDecipher(user, balanceEnc);
 
 		} catch (SQLException e) {
-			// add info to logger
 			e.printStackTrace();
+			return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
 		}
-        return JsonToolkit.generateStatus("ERROR", "Unknown SQL error").toString();
+		catch (NumberFormatException | InvalidKeyException | NoSuchPaddingException | NoSuchAlgorithmException | InvalidAlgorithmParameterException | BadPaddingException | IllegalBlockSizeException e) {
+			e.printStackTrace();
+			return JsonToolkit.generateStatus("ERROR", "Unknown encryption error").toString();
+		}
+		
+		return JsonToolkit.generateStatus("OK", "balance", Integer.parseInt(balanceDec)).toString();
 	}
 
     private String checkGiftCard(ResultSet res, String owner, String nonce) throws SQLException{

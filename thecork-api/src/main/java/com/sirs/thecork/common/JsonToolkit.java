@@ -50,4 +50,12 @@ public class JsonToolkit {
 
         return json;
     }
+    public static JSONObject generateStatus(String status, String field, int val){
+        JSONObject json = new JSONObject();
+
+        json.put("status", status);
+        json.put(field, val);
+
+        return json;
+    }
 }
