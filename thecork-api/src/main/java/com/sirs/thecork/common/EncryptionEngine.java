@@ -18,8 +18,6 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class EncryptionEngine {
 
-	private final String iv64 = "LJEKMImGCiCL7K22b28nYg==";
-
 	public EncryptionEngine() {
 	}
 	
@@ -31,6 +29,10 @@ public class EncryptionEngine {
 	public SecretKey stringToKey(String key) {
 		byte[] decodedKey = Base64.getDecoder().decode(key);
 		return new SecretKeySpec(decodedKey, 0, decodedKey.length, "AES"); 
+	}
+	
+	public String ivToString(GCMParameterSpec iv) {
+		return Base64.getEncoder().encodeToString(iv.getIV());
 	}
 	
 	public GCMParameterSpec stringToIv(String iv){
@@ -53,9 +55,6 @@ public class EncryptionEngine {
 		byte[] iv = new byte[16];
 	    rand.nextBytes(iv);
 	    
-	    String ivS = Base64.getEncoder().encodeToString(iv);
-	    System.out.println("IV: " + ivS);
-
 	    return new GCMParameterSpec(128, iv);
 	}
 	
@@ -65,7 +64,6 @@ public class EncryptionEngine {
 		
 		Cipher cipher;
 		byte[] ciphertext;
-		GCMParameterSpec spec;
 		
 		cipher = Cipher.getInstance("AES/GCM/NoPadding");
 	    cipher.init(Cipher.ENCRYPT_MODE, key, iv);

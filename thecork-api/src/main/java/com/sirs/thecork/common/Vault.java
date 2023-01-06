@@ -4,12 +4,9 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Base64;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -42,8 +39,11 @@ public class Vault {
 		stmt = _conn.prepareStatement("SELECT iv FROM client_ivs WHERE username = ?;");
 		stmt.setString(1,  user);
 		res = stmt.executeQuery();			
-		res.next();
 		
+		if (!res.isBeforeFirst())
+			return null;
+
+		res.next();
 		iv = _ngn.stringToIv(res.getString("iv"));
 		
 		return _ngn.decryptGCM(ciphertext, _key, iv);
@@ -57,9 +57,14 @@ public class Vault {
 		stmt = _conn.prepareStatement("SELECT iv FROM client_ivs WHERE username = ?;");
 		stmt.setString(1,  user);
 		res = stmt.executeQuery();			
-		res.next();
 		
-		iv = _ngn.stringToIv(res.getString("iv"));
+		if (!res.isBeforeFirst()) {
+			iv = createClientIv(user);
+		}
+		else {
+			res.next();
+			iv = _ngn.stringToIv(res.getString("iv"));
+		}
 		
 		return _ngn.encryptGCM(plaintext, _key, iv);
 	}
@@ -73,8 +78,11 @@ public class Vault {
 		stmt = _conn.prepareStatement("SELECT iv FROM giftcard_ivs WHERE id = ?;");
 		stmt.setInt(1,  id);
 		res = stmt.executeQuery();			
-		res.next();
 		
+		if (!res.isBeforeFirst())
+			return null;
+
+		res.next();
 		iv = _ngn.stringToIv(res.getString("iv"));
 		
 		return _ngn.decryptGCM(ciphertext, _key, iv);
@@ -88,11 +96,60 @@ public class Vault {
 		stmt = _conn.prepareStatement("SELECT iv FROM giftcard_ivs WHERE id = ?;");
 		stmt.setInt(1,  id);
 		res = stmt.executeQuery();			
-		res.next();
 		
-		iv = _ngn.stringToIv(res.getString("iv"));
+		if (!res.isBeforeFirst()) {
+			iv = createGiftcardIv();
+		}
+		else {
+			res.next();
+			iv = _ngn.stringToIv(res.getString("iv"));
+		}
 		
 		return _ngn.encryptGCM(plaintext, _key, iv);
+	}
+	public String giftcardFirstEncipher(String plaintext) throws SQLException, NumberFormatException, InvalidKeyException, NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException, BadPaddingException, IllegalBlockSizeException {
+		PreparedStatement stmt;
+		ResultSet res;
+		GCMParameterSpec iv;
+		
+		iv = createGiftcardIv();
+
+		return _ngn.encryptGCM(plaintext, _key, iv);
+	}
+	
+	private GCMParameterSpec createClientIv(String user) throws SQLException {
+		PreparedStatement stmt;
+		GCMParameterSpec iv;
+		int res;
+		
+		iv = _ngn.generateIv(128);
+		
+		stmt = _conn.prepareStatement("INSERT INTO client_ivs VALUES(?, ?);");
+		stmt.setString(1, user);
+		stmt.setString(2, _ngn.ivToString(iv));
+		res = stmt.executeUpdate();
+		
+		if (res != 1)
+			return null;
+		
+		return iv;
+	}
+
+	private GCMParameterSpec createGiftcardIv() throws SQLException {
+		PreparedStatement stmt;
+		GCMParameterSpec iv;
+		int res;
+		
+		iv = _ngn.generateIv(128);
+		
+		stmt = _conn.prepareStatement("INSERT INTO giftcard_ivs VALUES(0, ?);");
+		stmt.setString(1, _ngn.ivToString(iv));
+		res = stmt.executeUpdate();
+		
+		if (res != 1)
+			return null;
+		
+		return iv;
 	}
 	
 	

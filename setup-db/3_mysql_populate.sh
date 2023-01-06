@@ -12,7 +12,7 @@ sudo mysql -u sirs -psirs thecork -e "CREATE TABLE staff(username VARCHAR(32) NO
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard(id INT UNSIGNED UNIQUE AUTO_INCREMENT NOT NULL, nonce CHAR(32) NOT NULL, owner VARCHAR(32), value VARCHAR(28) NOT NULL, PRIMARY KEY(id), FOREIGN KEY (owner) REFERENCES client(username));"
 
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE client_ivs(username VARCHAR(32), iv CHAR(24), FOREIGN KEY (username) REFERENCES client(username));"
-sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard_ivs(id INT UNSIGNED AUTO_INCREMENT, iv CHAR(24), FOREIGN KEY (id) REFERENCES giftcard(id));"
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard_ivs(id INT UNSIGNED AUTO_INCREMENT NOT NULL, iv CHAR(24), FOREIGN KEY (id) REFERENCES giftcard(id));"
 
 #
 # populate tables
