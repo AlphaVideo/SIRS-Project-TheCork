@@ -1,5 +1,5 @@
 # The Cork&trade;
-All virtual machines used in this service are recommended to run with **Linux, Ubuntu 64-bit** operating systems.
+All virtual machines used in this service are recommended to run on **Linux, Ubuntu 64-bit** operating systems.
 
 ## Initial setup
 To run, 4 different virtual machines with the recommended OS are required. \
@@ -28,14 +28,16 @@ Once done, the client script is relatively straightforward. Some of the users th
 ## Project structure
 Organization of project folders:
 
+- `example-runs/`: wireshark capture of simple operations
+- `hashes/`: hashes of virtual disks
+- `misc/`: certificate files and keys for the API
+- `msql-keys/:`: certificate files and keys for the DB
 - `setup-client/`: scripts to be run inside a VM to setup the client before starting service
 - `setup-router/`: scripts to be run inside a VM to setup the router before starting service
 - `setup-api/`: scripts to be run inside a VM to setup the api before starting service
 - `setup-db/`: scripts to be run inside a VM to setup the db before starting service
 - `thecork-api/`: code regarding REST API for service functionality. This is where you'll startup TheCork live service.
 - `thecork-client/`: code regarding the CLI client application to connect to the service.
-- `misc/`: certificate files and keys for the API
-- `msql-keys/:`: certificate files and keys for the DB
 
 ***Notes:***
 - Follow the file `setup-db/3_mysql_populate.sh` to check the used Database structure
