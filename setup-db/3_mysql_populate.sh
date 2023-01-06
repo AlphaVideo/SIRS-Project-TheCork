@@ -12,7 +12,7 @@ sudo mysql -u sirs -psirs thecork -e "CREATE TABLE staff(username VARCHAR(32) NO
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard(id INT UNSIGNED UNIQUE AUTO_INCREMENT NOT NULL, nonce CHAR(32) NOT NULL, owner VARCHAR(64), value VARCHAR(28) NOT NULL, PRIMARY KEY(id));"
 
 sudo mysql -u sirs -psirs thecork -e "CREATE TABLE client_ivs(username VARCHAR(32), iv CHAR(24), FOREIGN KEY (username) REFERENCES client(username));"
-sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard_ivs(id INT UNSIGNED AUTO_INCREMENT NOT NULL, iv CHAR(24), FOREIGN KEY (id) REFERENCES giftcard(id));"
+sudo mysql -u sirs -psirs thecork -e "CREATE TABLE giftcard_ivs(id INT UNSIGNED NOT NULL, iv CHAR(24), FOREIGN KEY (id) REFERENCES giftcard(id));"
 
 #
 # populate tables
@@ -45,10 +45,10 @@ sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('Lopes', 'A
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('Tomas', 'issRZj585pi+2P5pnCbJAw==');"
 sudo mysql -u sirs -psirs thecork -e "INSERT INTO client_ivs VALUES ('user',  'XH8EOF0fYBdlPkslZLrC1Q==');"
 
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard_ivs VALUES (0, '5UFXnPuUkpzfDkcNo42BNQ==');"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard_ivs VALUES (0, 'VUAPCw3iYJpXSkdcNRQzLA==');"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard_ivs VALUES (0, 'hZ+q8shPyu6nvYlEzLm6DA==');"
-sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard_ivs VALUES (0, 'iFh7k5mtuV5vc5CrFDRY2g==');"
+#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard_ivs VALUES (0, '5UFXnPuUkpzfDkcNo42BNQ==');"
+#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard_ivs VALUES (0, 'VUAPCw3iYJpXSkdcNRQzLA==');"
+#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard_ivs VALUES (0, 'hZ+q8shPyu6nvYlEzLm6DA==');"
+#sudo mysql -u sirs -psirs thecork -e "INSERT INTO giftcard_ivs VALUES (0, 'iFh7k5mtuV5vc5CrFDRY2g==');"
 
 # other important commands
 #  -Delete a Database
