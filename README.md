@@ -1,5 +1,5 @@
 # The Cork&trade;
-All machines used in this service are recommended to run on **Linux, Ubuntu 64-bit** operating systems.
+All virtual machines used in this service are recommended to run with **Linux, Ubuntu 64-bit** operating systems.
 
 ## Initial setup
 To run, 4 different virtual machines with the recommended OS are required. \
