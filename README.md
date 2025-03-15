@@ -1,4 +1,7 @@
 # The Cork&trade;
+
+Project done for the Network and Computer Security 2022/2023 course at Instituto Superior Técnico.
+
 All virtual machines used in this service are recommended to run on **Linux, Ubuntu 64-bit** operating systems.
 
 ## Initial setup
